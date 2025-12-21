@@ -332,6 +332,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", audioBlob, "recording.webm");
+      formData.append("language", selectedLanguage);
       const result = await transcribeAudio(formData);
       if (result.success && result.data) {
         setInputText((prev) => prev ? `${prev}\n${result.data}` : result.data!);
