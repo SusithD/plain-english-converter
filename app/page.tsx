@@ -53,7 +53,7 @@ const personas: {
       description: "Explain Like I'm 5",
       icon: <Baby className="w-4 h-4" />,
       badge: "Simple",
-      badgeColor: "bg-blue-50 text-blue-600 border-blue-100",
+      badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     },
     {
       value: "tldr",
@@ -61,7 +61,7 @@ const personas: {
       description: "One sentence summary",
       icon: <FileDigit className="w-4 h-4" />,
       badge: "Quick",
-      badgeColor: "bg-amber-50 text-amber-600 border-amber-100",
+      badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
     },
     {
       value: "professional",
@@ -69,7 +69,7 @@ const personas: {
       description: "Corporate safe",
       icon: <Briefcase className="w-4 h-4" />,
       badge: "Formal",
-      badgeColor: "bg-slate-50 text-slate-600 border-slate-200",
+      badgeColor: "bg-neutral-500/10 text-neutral-300 border-neutral-500/20",
     },
     {
       value: "roast",
@@ -77,7 +77,7 @@ const personas: {
       description: "Roast the jargon",
       icon: <Flame className="w-4 h-4" />,
       badge: "Viral",
-      badgeColor: "bg-orange-50 text-orange-600 border-orange-100",
+      badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/20",
     },
   ];
 
@@ -209,41 +209,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Subtle decorative elements */}
+      {/* Subtle decorative elements - Next.js inspired */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Top right gradient blob */}
+        {/* Top gradient glow */}
         <div
-          className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-40"
+          className="absolute -top-[400px] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-20"
           style={{
             background:
-              "radial-gradient(circle, oklch(0.92 0.05 280) 0%, transparent 70%)",
+              "radial-gradient(ellipse, rgba(59, 130, 246, 0.3) 0%, transparent 70%)",
           }}
         />
-        {/* Bottom left gradient blob */}
+        {/* Subtle dot grid pattern */}
         <div
-          className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full opacity-40"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            background:
-              "radial-gradient(circle, oklch(0.92 0.04 200) 0%, transparent 70%)",
-          }}
-        />
-        {/* Center subtle glow */}
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-30"
-          style={{
-            background:
-              "radial-gradient(ellipse, oklch(0.95 0.03 270) 0%, transparent 70%)",
-          }}
-        />
-        {/* Subtle grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `
-              linear-gradient(oklch(0.50 0.18 270) 1px, transparent 1px),
-              linear-gradient(90deg, oklch(0.50 0.18 270) 1px, transparent 1px)
-            `,
-            backgroundSize: "60px 60px",
+            backgroundImage: `radial-gradient(circle at center, #ffffff 1px, transparent 1px)`,
+            backgroundSize: "32px 32px",
           }}
         />
       </div>
@@ -253,9 +234,9 @@ export default function Home() {
         {/* Header */}
         <header className="text-center mb-12 md:mb-16">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6 shadow-sm">
-            <Wand2 className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+            <Wand2 className="w-4 h-4 text-blue-400" />
+            <span className="text-sm font-medium text-neutral-200">
               AI-Powered Simplification
             </span>
           </div>
@@ -263,7 +244,7 @@ export default function Home() {
           {/* Title */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 text-foreground tracking-tight">
             Plain English
-            <span className="block mt-1 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+            <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
               Converter
             </span>
           </h1>
@@ -339,12 +320,12 @@ export default function Home() {
         {/* Split Screen Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Input Card */}
-          <Card className="bg-card/80 backdrop-blur-sm border border-border/60 shadow-lg shadow-primary/[0.03] hover:shadow-xl hover:shadow-primary/[0.05] transition-shadow duration-300">
+          <Card className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 hover:border-neutral-700 transition-colors duration-300">
             <CardHeader className="pb-4 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-                    <FileText className="w-5 h-5 text-primary" />
+                  <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <FileText className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
                     <CardTitle className="text-lg font-semibold text-foreground">
@@ -372,7 +353,7 @@ export default function Home() {
                 placeholder="Enter complex text here...&#10;&#10;For example: 'The party of the first part shall indemnify and hold harmless the party of the second part from any and all claims arising from...'"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="h-[280px] md:h-[360px] resize-none overflow-y-auto bg-muted/30 border-border/50 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 text-base transition-all rounded-xl placeholder:text-muted-foreground/60"
+                className="h-[280px] md:h-[360px] resize-none overflow-y-auto bg-neutral-800/50 border-neutral-700 focus:border-neutral-600 focus:ring-2 focus:ring-white/10 text-base transition-all rounded-xl placeholder:text-neutral-500"
               />
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-2">
@@ -389,7 +370,7 @@ export default function Home() {
                   onClick={handleSimplify}
                   disabled={!inputText.trim() || isPending}
                   className={clsx(
-                    "gap-2.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-medium px-6",
+                    "gap-2.5 bg-white hover:bg-neutral-100 text-black shadow-lg transition-all duration-300 font-medium px-6",
                     isPending && "opacity-90"
                   )}
                   size="lg"
@@ -416,7 +397,7 @@ export default function Home() {
           </Card>
 
           {/* Output Card */}
-          <Card className="bg-card/80 backdrop-blur-sm border border-border/60 shadow-lg shadow-primary/[0.03] hover:shadow-xl hover:shadow-primary/[0.05] transition-shadow duration-300">
+          <Card className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 hover:border-neutral-700 transition-colors duration-300">
             <CardHeader className="pb-4 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -424,14 +405,14 @@ export default function Home() {
                     className={clsx(
                       "p-2.5 rounded-xl border",
                       selectedPersona === "roast"
-                        ? "bg-gradient-to-br from-orange-500/10 to-red-500/5 border-orange-500/10"
-                        : "bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border-emerald-500/10"
+                        ? "bg-orange-500/10 border-orange-500/20"
+                        : "bg-emerald-500/10 border-emerald-500/20"
                     )}
                   >
                     {selectedPersona === "roast" ? (
-                      <Flame className="w-5 h-5 text-orange-600" />
+                      <Flame className="w-5 h-5 text-orange-400" />
                     ) : (
-                      <Sparkles className="w-5 h-5 text-emerald-600" />
+                      <Sparkles className="w-5 h-5 text-emerald-400" />
                     )}
                   </div>
                   <div>
@@ -453,10 +434,10 @@ export default function Home() {
                       size="sm"
                       onClick={handleSpeak}
                       className={clsx(
-                        "gap-2 transition-all font-medium",
+                        "gap-2 transition-all font-medium border-neutral-700",
                         isSpeaking
-                          ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
-                          : "hover:bg-muted/60 border-border/60"
+                          ? "bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/15"
+                          : "hover:bg-neutral-800 text-neutral-300"
                       )}
                       title={isSpeaking ? "Stop speaking" : "Listen to this"}
                     >
@@ -479,10 +460,10 @@ export default function Home() {
                       size="sm"
                       onClick={handleCopy}
                       className={clsx(
-                        "gap-2 transition-all font-medium",
+                        "gap-2 transition-all font-medium border-neutral-700",
                         copied
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                          : "hover:bg-muted/60 border-border/60"
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/15"
+                          : "hover:bg-neutral-800 text-neutral-300"
                       )}
                     >
                       {copied ? (
@@ -502,7 +483,7 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent className="pt-5">
-              <div className="min-h-[280px] md:min-h-[360px] rounded-xl bg-muted/30 border border-border/50 p-5 overflow-y-auto">
+              <div className="min-h-[280px] md:min-h-[360px] rounded-xl bg-neutral-800/50 border border-neutral-700 p-5 overflow-y-auto">
                 {isPending ? (
                   <div className="space-y-4">
                     <div className="space-y-3">
@@ -522,11 +503,11 @@ export default function Home() {
                   </div>
                 ) : error ? (
                   <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-6">
-                    <div className="p-4 rounded-2xl bg-red-50 border border-red-100">
-                      <AlertCircle className="w-8 h-8 text-red-500" />
+                    <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
+                      <AlertCircle className="w-8 h-8 text-red-400" />
                     </div>
                     <div>
-                      <p className="font-semibold text-red-600 mb-1.5">
+                      <p className="font-semibold text-red-400 mb-1.5">
                         Something went wrong
                       </p>
                       <p className="text-sm text-muted-foreground max-w-xs">
@@ -548,8 +529,8 @@ export default function Home() {
                   </p>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-6">
-                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10">
-                      <BookOpen className="w-8 h-8 text-primary/70" />
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                      <BookOpen className="w-8 h-8 text-neutral-400" />
                     </div>
                     <div>
                       <p className="font-semibold text-foreground mb-1.5">
@@ -577,24 +558,24 @@ export default function Home() {
                     className={clsx(
                       "flex items-center gap-2 px-3 py-1.5 rounded-full border",
                       selectedPersona === "roast"
-                        ? "bg-orange-50 border-orange-100"
-                        : "bg-emerald-50 border-emerald-100"
+                        ? "bg-orange-500/10 border-orange-500/20"
+                        : "bg-emerald-500/10 border-emerald-500/20"
                     )}
                   >
                     <Check
                       className={clsx(
                         "w-3.5 h-3.5",
                         selectedPersona === "roast"
-                          ? "text-orange-600"
-                          : "text-emerald-600"
+                          ? "text-orange-400"
+                          : "text-emerald-400"
                       )}
                     />
                     <span
                       className={clsx(
                         "text-xs font-medium",
                         selectedPersona === "roast"
-                          ? "text-orange-700"
-                          : "text-emerald-700"
+                          ? "text-orange-400"
+                          : "text-emerald-400"
                       )}
                     >
                       {selectedPersona === "eli5" && "5-year-old friendly"}
@@ -645,13 +626,13 @@ export default function Home() {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="group relative p-6 rounded-2xl bg-card/60 border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.03] transition-all duration-300"
+                className="group relative p-6 rounded-2xl bg-neutral-900/50 border border-neutral-800 hover:border-neutral-700 transition-colors duration-300"
               >
-                <div className="absolute top-4 right-4 text-4xl font-bold text-primary/5 group-hover:text-primary/10 transition-colors">
+                <div className="absolute top-4 right-4 text-4xl font-bold text-white/5 group-hover:text-white/10 transition-colors">
                   {feature.step}
                 </div>
-                <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 w-fit mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10 w-fit mb-4">
+                  <feature.icon className="w-6 h-6 text-neutral-300" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {feature.title}
@@ -666,13 +647,13 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="text-center mt-16 md:mt-20 pb-8">
-          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-muted/40 border border-border/50">
-            <span className="text-sm text-muted-foreground">Powered by</span>
-            <span className="text-sm font-semibold text-foreground">
+          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-neutral-900/50 border border-neutral-800">
+            <span className="text-sm text-neutral-500">Powered by</span>
+            <span className="text-sm font-semibold text-neutral-200">
               Llama 3.3 70B
             </span>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/40"></span>
-            <span className="text-sm text-muted-foreground">Groq Cloud</span>
+            <span className="w-1 h-1 rounded-full bg-neutral-600"></span>
+            <span className="text-sm text-neutral-500">Groq Cloud</span>
           </div>
         </footer>
       </div>
