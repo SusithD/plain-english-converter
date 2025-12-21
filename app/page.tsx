@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { simplifyText } from "./actions";
+import { simplifyText, PersonaType } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -11,6 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sparkles,
@@ -22,8 +29,55 @@ import {
   ArrowRight,
   BookOpen,
   Wand2,
+  Baby,
+  FileDigit,
+  Briefcase,
+  Flame,
 } from "lucide-react";
 import { clsx } from "clsx";
+
+// Persona configuration with icons and descriptions
+const personas: {
+  value: PersonaType;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  badge: string;
+  badgeColor: string;
+}[] = [
+    {
+      value: "eli5",
+      label: "ELI5",
+      description: "Explain Like I'm 5",
+      icon: <Baby className="w-4 h-4" />,
+      badge: "Simple",
+      badgeColor: "bg-blue-50 text-blue-600 border-blue-100",
+    },
+    {
+      value: "tldr",
+      label: "TL;DR",
+      description: "One sentence summary",
+      icon: <FileDigit className="w-4 h-4" />,
+      badge: "Quick",
+      badgeColor: "bg-amber-50 text-amber-600 border-amber-100",
+    },
+    {
+      value: "professional",
+      label: "Professional",
+      description: "Corporate safe",
+      icon: <Briefcase className="w-4 h-4" />,
+      badge: "Formal",
+      badgeColor: "bg-slate-50 text-slate-600 border-slate-200",
+    },
+    {
+      value: "roast",
+      label: "Roast Mode",
+      description: "Roast the jargon",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "Viral",
+      badgeColor: "bg-orange-50 text-orange-600 border-orange-100",
+    },
+  ];
 
 export default function Home() {
   const [inputText, setInputText] = useState("");
@@ -31,13 +85,16 @@ export default function Home() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [selectedPersona, setSelectedPersona] = useState<PersonaType>("eli5");
+
+  const currentPersona = personas.find((p) => p.value === selectedPersona)!;
 
   const handleSimplify = () => {
     setError("");
     setOutputText("");
 
     startTransition(async () => {
-      const result = await simplifyText(inputText);
+      const result = await simplifyText(inputText, selectedPersona);
       if (result.success && result.data) {
         setOutputText(result.data);
       } else {
@@ -63,6 +120,22 @@ export default function Home() {
     setError("");
   };
 
+  // Get the output label based on persona
+  const getOutputLabel = () => {
+    switch (selectedPersona) {
+      case "eli5":
+        return "Kid-Friendly Version";
+      case "tldr":
+        return "Quick Summary";
+      case "professional":
+        return "Professional Version";
+      case "roast":
+        return "The Roast 🔥";
+      default:
+        return "Simplified Text";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Subtle decorative elements */}
@@ -71,21 +144,24 @@ export default function Home() {
         <div
           className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-40"
           style={{
-            background: "radial-gradient(circle, oklch(0.92 0.05 280) 0%, transparent 70%)"
+            background:
+              "radial-gradient(circle, oklch(0.92 0.05 280) 0%, transparent 70%)",
           }}
         />
         {/* Bottom left gradient blob */}
         <div
           className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full opacity-40"
           style={{
-            background: "radial-gradient(circle, oklch(0.92 0.04 200) 0%, transparent 70%)"
+            background:
+              "radial-gradient(circle, oklch(0.92 0.04 200) 0%, transparent 70%)",
           }}
         />
         {/* Center subtle glow */}
         <div
           className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full opacity-30"
           style={{
-            background: "radial-gradient(ellipse, oklch(0.95 0.03 270) 0%, transparent 70%)"
+            background:
+              "radial-gradient(ellipse, oklch(0.95 0.03 270) 0%, transparent 70%)",
           }}
         />
         {/* Subtle grid pattern */}
@@ -96,7 +172,7 @@ export default function Home() {
               linear-gradient(oklch(0.50 0.18 270) 1px, transparent 1px),
               linear-gradient(90deg, oklch(0.50 0.18 270) 1px, transparent 1px)
             `,
-            backgroundSize: "60px 60px"
+            backgroundSize: "60px 60px",
           }}
         />
       </div>
@@ -128,6 +204,67 @@ export default function Home() {
           </p>
         </header>
 
+        {/* Persona Selector */}
+        <div className="max-w-md mx-auto mb-8">
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground">
+              Choose style:
+            </span>
+            <Select
+              value={selectedPersona}
+              onValueChange={(value: PersonaType) => setSelectedPersona(value)}
+            >
+              <SelectTrigger className="w-[220px] bg-card border-border/60 shadow-sm hover:shadow-md transition-shadow">
+                <SelectValue>
+                  <div className="flex items-center gap-2">
+                    {currentPersona.icon}
+                    <span className="font-medium">{currentPersona.label}</span>
+                    <span
+                      className={clsx(
+                        "text-xs px-1.5 py-0.5 rounded-full border ml-1",
+                        currentPersona.badgeColor
+                      )}
+                    >
+                      {currentPersona.badge}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border/60">
+                {personas.map((persona) => (
+                  <SelectItem
+                    key={persona.value}
+                    value={persona.value}
+                    className="cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 py-1">
+                      <div className="p-1.5 rounded-lg bg-muted/60">
+                        {persona.icon}
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{persona.label}</span>
+                          <span
+                            className={clsx(
+                              "text-xs px-1.5 py-0.5 rounded-full border",
+                              persona.badgeColor
+                            )}
+                          >
+                            {persona.badge}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {persona.description}
+                        </span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         {/* Split Screen Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Input Card */}
@@ -139,7 +276,9 @@ export default function Home() {
                     <FileText className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-foreground">Original Text</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-foreground">
+                      Original Text
+                    </CardTitle>
                     <CardDescription className="text-muted-foreground">
                       Paste your complex content here
                     </CardDescription>
@@ -162,7 +301,7 @@ export default function Home() {
                 placeholder="Enter complex text here...&#10;&#10;For example: 'The party of the first part shall indemnify and hold harmless the party of the second part from any and all claims arising from...'"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="min-h-[280px] md:min-h-[360px] resize-none bg-muted/30 border-border/50 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 text-base transition-all rounded-xl placeholder:text-muted-foreground/60"
+                className="h-[280px] md:h-[360px] resize-none overflow-y-auto bg-muted/30 border-border/50 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 text-base transition-all rounded-xl placeholder:text-muted-foreground/60"
               />
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-2">
@@ -191,8 +330,12 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <Zap className="w-5 h-5" />
-                      Simplify
+                      {selectedPersona === "roast" ? (
+                        <Flame className="w-5 h-5" />
+                      ) : (
+                        <Zap className="w-5 h-5" />
+                      )}
+                      {selectedPersona === "roast" ? "Roast It" : "Simplify"}
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </>
                   )}
@@ -206,13 +349,28 @@ export default function Home() {
             <CardHeader className="pb-4 border-b border-border/40">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/10">
-                    <Sparkles className="w-5 h-5 text-emerald-600" />
+                  <div
+                    className={clsx(
+                      "p-2.5 rounded-xl border",
+                      selectedPersona === "roast"
+                        ? "bg-gradient-to-br from-orange-500/10 to-red-500/5 border-orange-500/10"
+                        : "bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border-emerald-500/10"
+                    )}
+                  >
+                    {selectedPersona === "roast" ? (
+                      <Flame className="w-5 h-5 text-orange-600" />
+                    ) : (
+                      <Sparkles className="w-5 h-5 text-emerald-600" />
+                    )}
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-foreground">Simplified Text</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-foreground">
+                      {getOutputLabel()}
+                    </CardTitle>
                     <CardDescription className="text-muted-foreground">
-                      Easy-to-understand version
+                      {selectedPersona === "roast"
+                        ? "Ready to share on social"
+                        : "Easy-to-understand version"}
                     </CardDescription>
                   </div>
                 </div>
@@ -271,7 +429,9 @@ export default function Home() {
                       <p className="font-semibold text-red-600 mb-1.5">
                         Something went wrong
                       </p>
-                      <p className="text-sm text-muted-foreground max-w-xs">{error}</p>
+                      <p className="text-sm text-muted-foreground max-w-xs">
+                        {error}
+                      </p>
                     </div>
                     <Button
                       variant="outline"
@@ -293,11 +453,11 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-semibold text-foreground mb-1.5">
-                        Ready to simplify
+                        Ready to transform
                       </p>
                       <p className="text-sm text-muted-foreground max-w-[280px] leading-relaxed">
-                        Enter some complex text on the left and click
-                        &quot;Simplify&quot; to transform it into plain English
+                        Enter text and select your preferred style using the
+                        dropdown above
                       </p>
                     </div>
                   </div>
@@ -313,9 +473,35 @@ export default function Home() {
                       · {outputText.split(/\s+/).filter(Boolean).length} words
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-xs font-medium text-emerald-700">5th grade reading level</span>
+                  <div
+                    className={clsx(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-full border",
+                      selectedPersona === "roast"
+                        ? "bg-orange-50 border-orange-100"
+                        : "bg-emerald-50 border-emerald-100"
+                    )}
+                  >
+                    <Check
+                      className={clsx(
+                        "w-3.5 h-3.5",
+                        selectedPersona === "roast"
+                          ? "text-orange-600"
+                          : "text-emerald-600"
+                      )}
+                    />
+                    <span
+                      className={clsx(
+                        "text-xs font-medium",
+                        selectedPersona === "roast"
+                          ? "text-orange-700"
+                          : "text-emerald-700"
+                      )}
+                    >
+                      {selectedPersona === "eli5" && "5-year-old friendly"}
+                      {selectedPersona === "tldr" && "One-liner summary"}
+                      {selectedPersona === "professional" && "Corporate ready"}
+                      {selectedPersona === "roast" && "Ready to go viral"}
+                    </span>
                   </div>
                 </div>
               )}
@@ -326,29 +512,36 @@ export default function Home() {
         {/* Features Section */}
         <div className="mt-16 md:mt-20">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">How it works</h2>
-            <p className="text-muted-foreground">Transform complex text in three simple steps</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              How it works
+            </h2>
+            <p className="text-muted-foreground">
+              Transform complex text in three simple steps
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 icon: FileText,
                 title: "Paste your text",
-                description: "Copy and paste any complex document, legal jargon, or technical writing",
-                step: "01"
+                description:
+                  "Copy and paste any complex document, legal jargon, or technical writing",
+                step: "01",
               },
               {
-                icon: Zap,
-                title: "AI simplifies it",
-                description: "Our AI analyzes and rewrites your content using clear, simple language",
-                step: "02"
+                icon: Wand2,
+                title: "Choose your style",
+                description:
+                  "Select from ELI5, TL;DR, Professional, or Roast Mode for the perfect tone",
+                step: "02",
               },
               {
                 icon: BookOpen,
-                title: "Get plain English",
-                description: "Receive easy-to-understand text that anyone can comprehend",
-                step: "03"
-              }
+                title: "Get your result",
+                description:
+                  "Receive perfectly transformed text ready to use or share",
+                step: "03",
+              },
             ].map((feature, index) => (
               <div
                 key={index}
@@ -360,8 +553,12 @@ export default function Home() {
                 <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 w-fit mb-4">
                   <feature.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                <h3 className="font-semibold text-foreground mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
