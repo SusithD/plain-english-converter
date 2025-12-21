@@ -654,34 +654,38 @@ export default function Home() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6 px-6">
-                <Textarea
-                  placeholder="Paste legal text, jargon, or complex content here..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
-                />
-                <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
-                      {inputText.length.toLocaleString()} characters
-                    </span>
+              <CardContent className="p-0 space-y-0">
+                <div className="px-6 pt-6">
+                  <Textarea
+                    placeholder="Paste legal text, jargon, or complex content here..."
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
+                  />
+                </div>
+                <div className="p-6 pt-2">
+                  <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+                        {inputText.length.toLocaleString()} characters
+                      </span>
+                    </div>
+                    <Button
+                      onClick={handleSimplify}
+                      disabled={!inputText.trim() || isPending}
+                      className="gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10"
+                    >
+                      {isPending ? (
+                        <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <Zap className="w-4 h-4" />
+                          <span>Simplify</span>
+                          <ArrowRight className="w-3.5 h-3.5 opacity-50 transition-transform group-hover:translate-x-1" />
+                        </>
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={handleSimplify}
-                    disabled={!inputText.trim() || isPending}
-                    className="gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10"
-                  >
-                    {isPending ? (
-                      <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4" />
-                        <span>Simplify</span>
-                        <ArrowRight className="w-3.5 h-3.5 opacity-50 transition-transform group-hover:translate-x-1" />
-                      </>
-                    )}
-                  </Button>
                 </div>
               </CardContent>
             </Card>
