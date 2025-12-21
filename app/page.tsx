@@ -39,8 +39,27 @@ import {
   SendHorizontal,
   User,
   Bot,
+  History,
+  Clock,
+  Trash2,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { clsx } from "clsx";
+
+interface HistoryItem {
+  id: string;
+  originalText: string;
+  simplifiedText: string;
+  persona: PersonaType;
+  timestamp: number;
+}
 
 // Persona configuration with icons and descriptions
 const personas: {
@@ -98,6 +117,65 @@ export default function Home() {
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [isAsking, setIsAsking] = useState(false);
+
+  // History state
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("conversion_history");
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Failed to parse history", e);
+      }
+    }
+  }, []);
+
+  // Save to history helper
+  const saveToHistory = useCallback((original: string, simplified: string, persona: PersonaType) => {
+    setHistory((prev) => {
+      const newItem: HistoryItem = {
+        id: Math.random().toString(36).substring(7),
+        originalText: original,
+        simplifiedText: simplified,
+        persona,
+        timestamp: Date.now(),
+      };
+
+      // Keep only last 10 items
+      const newHistory = [newItem, ...prev].slice(0, 10);
+      localStorage.setItem("conversion_history", JSON.stringify(newHistory));
+      return newHistory;
+    });
+  }, []);
+
+  const deleteHistoryItem = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setHistory((prev) => {
+      const newHistory = prev.filter((item) => item.id !== id);
+      localStorage.setItem("conversion_history", JSON.stringify(newHistory));
+      return newHistory;
+    });
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("conversion_history");
+  };
+
+  const restoreFromHistory = (item: HistoryItem) => {
+    setInputText(item.originalText);
+    setOutputText(item.simplifiedText);
+    setSelectedPersona(item.persona);
+    setChatHistory([]);
+    setChatInput("");
+    setIsSidebarOpen(false);
+    stopSpeech();
+  };
+
 
 
   const currentPersona = personas.find((p) => p.value === selectedPersona)!;
@@ -180,6 +258,7 @@ export default function Home() {
       const result = await simplifyText(inputText, selectedPersona);
       if (result.success && result.data) {
         setOutputText(result.data);
+        saveToHistory(inputText, result.data, selectedPersona);
       } else {
         setError(result.error || "An error occurred");
       }
@@ -271,12 +350,108 @@ export default function Home() {
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-16 max-w-7xl">
         {/* Header */}
         <header className="text-center mb-12 md:mb-16">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
-            <Wand2 className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-medium text-neutral-200">
-              AI-Powered Simplification
-            </span>
+          <div className="flex justify-center items-center gap-4 mb-6">
+            {/* AI Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 shadow-sm">
+              <Wand2 className="w-4 h-4 text-blue-400" />
+              <span className="text-sm font-medium text-neutral-200">
+                AI-Powered Simplification
+              </span>
+            </div>
+
+            {/* History Trigger */}
+            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-neutral-900/50 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all gap-2"
+                >
+                  <History className="w-4 h-4" />
+                  <span className="hidden sm:inline">History</span>
+                  {history.length > 0 && (
+                    <span className="flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-blue-500 text-white rounded-full">
+                      {history.length}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="bg-[#0a0a0a] border-neutral-800 text-foreground sm:max-w-md overflow-y-auto">
+                <SheetHeader className="pb-6 border-b border-neutral-800 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <History className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <SheetTitle className="text-xl font-bold text-white">Your History</SheetTitle>
+                    </div>
+                    {history.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearHistory}
+                        className="text-neutral-500 hover:text-red-400 hover:bg-red-400/10 transition-colors gap-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Clear All
+                      </Button>
+                    )}
+                  </div>
+                  <SheetDescription className="text-neutral-500 text-left mt-2">
+                    Access your last 10 transformations instantly. Saved locally on your device.
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="space-y-4">
+                  {history.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-4">
+                        <Clock className="w-6 h-6 text-neutral-600" />
+                      </div>
+                      <p className="text-neutral-400 font-medium">No history yet</p>
+                      <p className="text-sm text-neutral-600 max-w-[200px] mt-1">
+                        Your simplifications will appear here once you start converting.
+                      </p>
+                    </div>
+                  ) : (
+                    history.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => restoreFromHistory(item)}
+                        className="group relative p-4 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:border-neutral-700 hover:bg-neutral-800/50 transition-all cursor-pointer overflow-hidden"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            {personas.find(p => p.value === item.persona)?.icon}
+                            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                              {item.persona}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-neutral-600 font-mono">
+                            {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="text-sm text-white font-medium line-clamp-2 mb-1">
+                          {item.originalText}
+                        </p>
+                        <p className="text-xs text-neutral-500 line-clamp-1">
+                          {item.simplifiedText}
+                        </p>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => deleteHistoryItem(item.id, e)}
+                          className="absolute bottom-2 right-2 w-7 h-7 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
 
           {/* Title */}
