@@ -53,6 +53,7 @@ import {
   Image as ImageIcon,
   Upload,
   X,
+  Activity,
 } from "lucide-react";
 import {
   Sheet,
@@ -137,6 +138,7 @@ export default function Home() {
   const [mode, setMode] = useState<"text" | "vision">("text");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isActionMode, setIsActionMode] = useState(false);
 
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
@@ -315,7 +317,7 @@ export default function Home() {
           });
 
           const base64Data = await base64Promise;
-          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name);
+          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name, isActionMode);
 
           if (result.success && result.data) {
             setOutputText(result.data);
@@ -337,7 +339,7 @@ export default function Home() {
     }
 
     startTransition(async () => {
-      const result = await simplifyText(inputText, selectedPersona);
+      const result = await simplifyText(inputText, selectedPersona, isActionMode);
       if (result.success && result.data) {
         setOutputText(result.data);
         saveToHistory(inputText, result.data, selectedPersona);
@@ -590,7 +592,7 @@ export default function Home() {
             {/* Logo area - only visible if sidebar is closed */}
             {!isDesktopSidebarOpen && (
               <div className="hidden md:flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-500">
-                <span className="text-sm font-black text-white tracking-tighter uppercase whitespace-nowrap">theqexle</span>
+                <span className="text-sm font-black text-white tracking-tighter whitespace-nowrap">theqexle</span>
               </div>
             )}
 
@@ -734,6 +736,21 @@ export default function Home() {
                         )}
                       >
                         Vision
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setIsActionMode(!isActionMode)}
+                        className={clsx(
+                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all gap-1.5",
+                          isActionMode ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                        )}
+                      >
+                        <Activity className={clsx("w-3 h-3", isActionMode ? "text-amber-400" : "text-neutral-600")} />
+                        Action Mode
                       </Button>
                     </div>
 
