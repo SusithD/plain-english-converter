@@ -524,18 +524,8 @@ export default function Home() {
         <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
           {/* Header */}
           <header className="text-center mb-12 md:mb-16">
-            <div className="flex justify-center items-center gap-4 mb-6">
-              {/* AI Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 shadow-sm">
-                <Wand2 className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium text-neutral-200">
-                  AI-Powered Simplification
-                </span>
-              </div>
-            </div>
-
             {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 text-foreground tracking-tighter text-left">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 text-foreground tracking-tighter text-left">
               Plain English
               <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
                 Converter
@@ -810,10 +800,6 @@ export default function Home() {
               <span className="text-neutral-400">© 2024 Plain English</span>
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Terms</a>
-            </div>
-            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800">
-              <span className="text-[9px] font-black text-neutral-600 uppercase tracking-[0.2em]">Engine</span>
-              <span className="text-[10px] font-bold text-white tracking-tight">LLAMA-3.3-70B</span>
             </div>
           </footer>
         </div>
