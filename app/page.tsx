@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useCallback } from "react";
-import { simplifyText, PersonaType } from "./actions";
+import { simplifyText, askQuestion, PersonaType } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -35,6 +35,10 @@ import {
   Flame,
   Volume2,
   Square,
+  MessageCircleQuestion,
+  SendHorizontal,
+  User,
+  Bot,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -89,6 +93,12 @@ export default function Home() {
   const [isPending, startTransition] = useTransition();
   const [selectedPersona, setSelectedPersona] = useState<PersonaType>("eli5");
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Follow-up Mode (Chat) state
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [isAsking, setIsAsking] = useState(false);
+
 
   const currentPersona = personas.find((p) => p.value === selectedPersona)!;
 
@@ -162,6 +172,9 @@ export default function Home() {
   const handleSimplify = () => {
     setError("");
     setOutputText("");
+    setChatHistory([]); // Reset chat when starting new simplification
+    setChatInput("");
+
 
     startTransition(async () => {
       const result = await simplifyText(inputText, selectedPersona);
@@ -189,6 +202,31 @@ export default function Home() {
     setInputText("");
     setOutputText("");
     setError("");
+    setChatHistory([]);
+    setChatInput("");
+  };
+
+  const handleAskQuestion = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!chatInput.trim() || !inputText || isAsking) return;
+
+    const question = chatInput.trim();
+    setChatInput("");
+    setChatHistory((prev) => [...prev, { role: "user", content: question }]);
+    setIsAsking(true);
+
+    try {
+      const result = await askQuestion(inputText, question);
+      if (result.success && result.data) {
+        setChatHistory((prev) => [...prev, { role: "assistant", content: result.data! }]);
+      } else {
+        setError(result.error || "Failed to get an answer.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred during chat.");
+    } finally {
+      setIsAsking(false);
+    }
   };
 
   // Get the output label based on persona
@@ -524,9 +562,84 @@ export default function Home() {
                     </Button>
                   </div>
                 ) : outputText ? (
-                  <p className="text-base leading-relaxed whitespace-pre-wrap text-foreground">
-                    {outputText}
-                  </p>
+                  <div className="space-y-6">
+                    <p className="text-base leading-relaxed whitespace-pre-wrap text-foreground">
+                      {outputText}
+                    </p>
+
+                    {/* Chat Section */}
+                    <div className="mt-8 border-t border-neutral-800 pt-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <MessageCircleQuestion className="w-4 h-4 text-blue-400" />
+                        <h4 className="text-sm font-semibold text-neutral-300">
+                          Still confused? Ask a specific question
+                        </h4>
+                      </div>
+
+                      {/* Msg History */}
+                      {chatHistory.length > 0 && (
+                        <div className="space-y-4 mb-6">
+                          {chatHistory.map((msg, i) => (
+                            <div
+                              key={i}
+                              className={clsx(
+                                "flex gap-3 text-sm animate-in fade-in slide-in-from-bottom-2",
+                                msg.role === "user" ? "flex-row-reverse" : "flex-row"
+                              )}
+                            >
+                              <div className={clsx(
+                                "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border",
+                                msg.role === "user"
+                                  ? "bg-neutral-800 border-neutral-700 text-neutral-400"
+                                  : "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                              )}>
+                                {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                              </div>
+                              <div className={clsx(
+                                "px-4 py-2.5 rounded-2xl max-w-[85%]",
+                                msg.role === "user"
+                                  ? "bg-neutral-800 text-neutral-200 rounded-tr-none"
+                                  : "bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-tl-none"
+                              )}>
+                                {msg.content}
+                              </div>
+                            </div>
+                          ))}
+                          {isAsking && (
+                            <div className="flex gap-3 text-sm items-center opacity-70">
+                              <div className="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center animate-pulse">
+                                <Bot className="w-4 h-4 text-blue-400" />
+                              </div>
+                              <div className="flex gap-1.5 items-center">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/50 animate-bounce [animation-delay:-0.3s]"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/50 animate-bounce [animation-delay:-0.15s]"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/50 animate-bounce"></span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Input */}
+                      <form onSubmit={handleAskQuestion} className="relative mt-2 group">
+                        <input
+                          type="text"
+                          placeholder="e.g., 'Does this say I can be sued?'"
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          disabled={isAsking}
+                          className="w-full bg-neutral-900 border border-neutral-800 rounded-full py-3 pl-5 pr-12 text-sm focus:outline-none focus:border-neutral-600 focus:ring-4 focus:ring-white/5 transition-all placeholder:text-neutral-500 disabled:opacity-50"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!chatInput.trim() || isAsking}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors disabled:opacity-30 disabled:hover:bg-white"
+                        >
+                          <SendHorizontal className="w-4 h-4" />
+                        </button>
+                      </form>
+                    </div>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-6">
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
@@ -542,7 +655,8 @@ export default function Home() {
                       </p>
                     </div>
                   </div>
-                )}
+                )
+                }
               </div>
               {outputText && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/40">
