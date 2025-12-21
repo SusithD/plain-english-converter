@@ -54,6 +54,7 @@ import {
   Upload,
   X,
   Activity,
+  Globe,
 } from "lucide-react";
 import {
   Sheet,
@@ -116,6 +117,20 @@ const personas: {
     },
   ];
 
+const languages = [
+  { value: "English", label: "English", flag: "🇺🇸" },
+  { value: "Spanish", label: "Español", flag: "🇪🇸" },
+  { value: "French", label: "Français", flag: "🇫🇷" },
+  { value: "German", label: "Deutsch", flag: "🇩🇪" },
+  { value: "Italian", label: "Italiano", flag: "🇮🇹" },
+  { value: "Portuguese", label: "Português", flag: "🇵🇹" },
+  { value: "Russian", label: "Русский", flag: "🇷🇺" },
+  { value: "Chinese", label: "中文", flag: "🇨🇳" },
+  { value: "Japanese", label: "日本語", flag: "🇯🇵" },
+  { value: "Hindi", label: "हिन्दी", flag: "🇮🇳" },
+  { value: "Sinhala", label: "සිංහල", flag: "🇱🇰" },
+];
+
 export default function Home() {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
@@ -139,6 +154,7 @@ export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isActionMode, setIsActionMode] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
 
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
@@ -317,7 +333,7 @@ export default function Home() {
           });
 
           const base64Data = await base64Promise;
-          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name, isActionMode);
+          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name, isActionMode, selectedLanguage);
 
           if (result.success && result.data) {
             setOutputText(result.data);
@@ -339,7 +355,7 @@ export default function Home() {
     }
 
     startTransition(async () => {
-      const result = await simplifyText(inputText, selectedPersona, isActionMode);
+      const result = await simplifyText(inputText, selectedPersona, isActionMode, selectedLanguage);
       if (result.success && result.data) {
         setOutputText(result.data);
         saveToHistory(inputText, result.data, selectedPersona);
@@ -649,52 +665,88 @@ export default function Home() {
             </p>
 
             {/* Persona Selector */}
-            <div className="flex items-center justify-start gap-4 mb-12">
-              <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
-                Simplify As:
-              </span>
-              <Select
-                value={selectedPersona}
-                onValueChange={(value: PersonaType) => setSelectedPersona(value)}
-              >
-                <SelectTrigger className="w-[220px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
-                  <SelectValue>
-                    <div className="flex items-center gap-2.5">
-                      {currentPersona.icon}
-                      <span className="font-bold text-neutral-200 text-sm">{currentPersona.label}</span>
-                      <span className={clsx("text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase", currentPersona.badgeColor)}>
-                        {currentPersona.badge}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
-                  {personas.map((persona) => (
-                    <SelectItem
-                      key={persona.value}
-                      value={persona.value}
-                      className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
-                    >
-                      <div className="flex items-center gap-3 py-1">
-                        <div className="p-1.5 rounded-md bg-white/5">
-                          {persona.icon}
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm tracking-tight">{persona.label}</span>
-                            <span className={clsx("text-[8px] px-1 py-0.5 rounded border font-black", persona.badgeColor)}>
-                              {persona.badge}
+            {/* Controls */}
+            <div className="flex flex-wrap items-center justify-start gap-8 mb-12">
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
+                  Simplify As:
+                </span>
+                <Select
+                  value={selectedPersona}
+                  onValueChange={(value: PersonaType) => setSelectedPersona(value)}
+                >
+                  <SelectTrigger className="w-[220px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
+                    <SelectValue>
+                      <div className="flex items-center gap-2.5">
+                        {currentPersona.icon}
+                        <span className="font-bold text-neutral-200 text-sm">{currentPersona.label}</span>
+                        <span className={clsx("text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase", currentPersona.badgeColor)}>
+                          {currentPersona.badge}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
+                    {personas.map((persona) => (
+                      <SelectItem
+                        key={persona.value}
+                        value={persona.value}
+                        className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
+                      >
+                        <div className="flex items-center gap-3 py-1">
+                          <div className="p-1.5 rounded-md bg-white/5">
+                            {persona.icon}
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-sm tracking-tight">{persona.label}</span>
+                              <span className={clsx("text-[8px] px-1 py-0.5 rounded border font-black", persona.badgeColor)}>
+                                {persona.badge}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-neutral-500">
+                              {persona.description}
                             </span>
                           </div>
-                          <span className="text-[10px] text-neutral-500">
-                            {persona.description}
-                          </span>
                         </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
+                  Target Language:
+                </span>
+                <Select
+                  value={selectedLanguage}
+                  onValueChange={(value) => setSelectedLanguage(value)}
+                >
+                  <SelectTrigger className="w-[180px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
+                    <SelectValue>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sm">{languages.find(l => l.value === selectedLanguage)?.flag}</span>
+                        <span className="font-bold text-neutral-200 text-sm">{selectedLanguage}</span>
                       </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
+                    {languages.map((lang) => (
+                      <SelectItem
+                        key={lang.value}
+                        value={lang.value}
+                        className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
+                      >
+                        <div className="flex items-center gap-3 py-1.5">
+                          <span className="text-lg">{lang.flag}</span>
+                          <span className="font-bold text-sm tracking-tight">{lang.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </header>   {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
