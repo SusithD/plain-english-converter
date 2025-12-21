@@ -563,7 +563,7 @@ export default function Home() {
           <header className="text-center mb-12 md:mb-16">
             {/* Title */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 text-foreground tracking-tighter text-left">
-              theqexle
+              Plain English
               <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
                 Translator
               </span>
