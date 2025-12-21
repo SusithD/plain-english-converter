@@ -123,7 +123,8 @@ export default function Home() {
 
   // History state
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -175,7 +176,8 @@ export default function Home() {
     setSelectedPersona(item.persona);
     setChatHistory([]);
     setChatInput("");
-    setIsSidebarOpen(false);
+    setIsDesktopSidebarOpen(false);
+    setIsMobileSidebarOpen(false);
     stopSpeech();
   };
 
@@ -330,7 +332,7 @@ export default function Home() {
       <aside
         className={clsx(
           "hidden md:flex flex-col fixed left-0 top-0 h-screen bg-[#0a0a0a] border-r border-neutral-800 transition-all duration-300 z-50 overflow-hidden",
-          isSidebarOpen ? "w-[260px] translate-x-0" : "w-0 -translate-x-full"
+          isDesktopSidebarOpen ? "w-[260px] translate-x-0" : "w-0 -translate-x-full"
         )}
       >
         <div className="flex flex-col h-full w-[260px] p-3">
@@ -347,7 +349,7 @@ export default function Home() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsSidebarOpen(false)}
+              onClick={() => setIsDesktopSidebarOpen(false)}
               className="text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg"
               title="Close sidebar"
             >
@@ -413,16 +415,16 @@ export default function Home() {
       <div
         className={clsx(
           "flex-1 flex flex-col min-h-screen relative transition-all duration-300",
-          isSidebarOpen ? "md:ml-[260px]" : "md:ml-0"
+          isDesktopSidebarOpen ? "md:ml-[260px]" : "md:ml-0"
         )}
       >
         {/* Toggle Button Container - Top Left */}
         <div className="fixed top-4 left-4 z-[60]">
-          {!isSidebarOpen && (
+          {!isDesktopSidebarOpen && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsSidebarOpen(true)}
+              onClick={() => setIsDesktopSidebarOpen(true)}
               className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 shadow-xl rounded-xl w-11 h-11 hidden md:flex items-center justify-center transition-all animate-in zoom-in-50 duration-300"
               title="Open sidebar"
             >
@@ -432,7 +434,7 @@ export default function Home() {
 
           {/* Mobile Sheet Trigger */}
           <div className="md:hidden">
-            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+            <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
@@ -452,7 +454,7 @@ export default function Home() {
                         </div>
                         <SheetTitle className="text-lg font-bold text-white uppercase tracking-tight">History</SheetTitle>
                       </div>
-                      <Button onClick={() => { handleClear(); setIsSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-md">
+                      <Button onClick={() => { handleClear(); setIsMobileSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-md">
                         <Plus className="w-5 h-5" />
                       </Button>
                     </div>
