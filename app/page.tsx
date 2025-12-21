@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useCallback } from "react";
 import { simplifyText, PersonaType } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,6 +33,8 @@ import {
   FileDigit,
   Briefcase,
   Flame,
+  Volume2,
+  Square,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -86,8 +88,76 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [selectedPersona, setSelectedPersona] = useState<PersonaType>("eli5");
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const currentPersona = personas.find((p) => p.value === selectedPersona)!;
+
+  // Stop speech when output text changes or component unmounts
+  const stopSpeech = useCallback(() => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Stop speech when output text changes
+    stopSpeech();
+  }, [outputText, stopSpeech]);
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      stopSpeech();
+    };
+  }, [stopSpeech]);
+
+  // Text-to-Speech handler
+  const handleSpeak = () => {
+    if (!outputText) return;
+
+    // Check if speech synthesis is available
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      console.error("Speech synthesis not supported");
+      return;
+    }
+
+    // If currently speaking, stop
+    if (isSpeaking) {
+      stopSpeech();
+      return;
+    }
+
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(outputText);
+
+    // Configure speech settings
+    utterance.rate = 0.9; // Slightly slower for better clarity
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    // Try to use a natural-sounding voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(
+      (voice) =>
+        voice.lang.startsWith("en") &&
+        (voice.name.includes("Natural") ||
+          voice.name.includes("Premium") ||
+          voice.name.includes("Enhanced"))
+    ) || voices.find((voice) => voice.lang.startsWith("en"));
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    // Event handlers
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    // Speak the text
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleSimplify = () => {
     setError("");
@@ -115,6 +185,7 @@ export default function Home() {
   };
 
   const handleClear = () => {
+    stopSpeech(); // Stop any ongoing speech
     setInputText("");
     setOutputText("");
     setError("");
@@ -375,29 +446,58 @@ export default function Home() {
                   </div>
                 </div>
                 {outputText && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCopy}
-                    className={clsx(
-                      "gap-2 transition-all font-medium",
-                      copied
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                        : "hover:bg-muted/60 border-border/60"
-                    )}
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {/* Text-to-Speech Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSpeak}
+                      className={clsx(
+                        "gap-2 transition-all font-medium",
+                        isSpeaking
+                          ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
+                          : "hover:bg-muted/60 border-border/60"
+                      )}
+                      title={isSpeaking ? "Stop speaking" : "Listen to this"}
+                    >
+                      {isSpeaking ? (
+                        <>
+                          <Square className="w-4 h-4 fill-current" />
+                          Stop
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4" />
+                          Listen
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Copy Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCopy}
+                      className={clsx(
+                        "gap-2 transition-all font-medium",
+                        copied
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                          : "hover:bg-muted/60 border-border/60"
+                      )}
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 )}
               </div>
             </CardHeader>
