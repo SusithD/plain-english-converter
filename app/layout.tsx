@@ -8,10 +8,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Plain English Converter | Simplify Complex Text Instantly",
+  title: "theqexle | Simplify Complex Text Instantly",
   description:
-    "Transform complex jargon, legal documents, and technical writing into simple, easy-to-understand plain English. Powered by AI.",
+    "Transform complex jargon, legal documents, and technical writing into simple, easy-to-understand language. Powered by AI.",
   keywords: [
+    "theqexle",
     "plain english",
     "text simplifier",
     "simplify text",
