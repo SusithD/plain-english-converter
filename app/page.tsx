@@ -450,9 +450,9 @@ export default function Home() {
                         <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
                           <History className="w-5 h-5 text-blue-400" />
                         </div>
-                        <SheetTitle className="text-xl font-bold text-white">History</SheetTitle>
+                        <SheetTitle className="text-lg font-bold text-white uppercase tracking-tight">History</SheetTitle>
                       </div>
-                      <Button onClick={() => { handleClear(); setIsSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white">
+                      <Button onClick={() => { handleClear(); setIsSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-md">
                         <Plus className="w-5 h-5" />
                       </Button>
                     </div>
@@ -533,294 +533,269 @@ export default function Home() {
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 text-foreground tracking-tight text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 text-foreground tracking-tighter text-left">
               Plain English
-              <span className="block mt-2 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
+              <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
                 Converter
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12 text-center">
+            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-10 text-left">
               Transform complex jargon, legal documents, and technical writing
               into simple, easy-to-understand language.
             </p>
 
             {/* Persona Selector */}
-            <div className="max-w-md mx-auto mb-16">
-              <div className="flex items-center justify-center gap-4">
-                <span className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">
-                  Select Style:
-                </span>
-                <Select
-                  value={selectedPersona}
-                  onValueChange={(value: PersonaType) => setSelectedPersona(value)}
-                >
-                  <SelectTrigger className="w-[240px] h-11 bg-neutral-900/50 border-neutral-800 shadow-xl hover:bg-neutral-800 hover:border-neutral-700 transition-all rounded-xl focus:ring-offset-0 focus:ring-0">
-                    <SelectValue>
-                      <div className="flex items-center gap-2.5">
-                        {currentPersona.icon}
-                        <span className="font-semibold text-neutral-200">{currentPersona.label}</span>
-                        <span className={clsx("text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-tight", currentPersona.badgeColor)}>
-                          {currentPersona.badge}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1">
-                    {personas.map((persona) => (
-                      <SelectItem
-                        key={persona.value}
-                        value={persona.value}
-                        className="cursor-pointer rounded-lg mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
-                      >
-                        <div className="flex items-center gap-3 py-1.5">
-                          <div className="p-2 rounded-lg bg-white/5">
-                            {persona.icon}
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold">{persona.label}</span>
-                              <span className={clsx("text-[9px] px-1.5 py-0.5 rounded-full border font-bold uppercase", persona.badgeColor)}>
-                                {persona.badge}
-                              </span>
-                            </div>
-                            <span className="text-xs text-neutral-500 mt-0.5">
-                              {persona.description}
+            <div className="flex items-center justify-start gap-4 mb-12">
+              <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
+                Simplify As:
+              </span>
+              <Select
+                value={selectedPersona}
+                onValueChange={(value: PersonaType) => setSelectedPersona(value)}
+              >
+                <SelectTrigger className="w-[220px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
+                  <SelectValue>
+                    <div className="flex items-center gap-2.5">
+                      {currentPersona.icon}
+                      <span className="font-bold text-neutral-200 text-sm">{currentPersona.label}</span>
+                      <span className={clsx("text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase", currentPersona.badgeColor)}>
+                        {currentPersona.badge}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
+                  {personas.map((persona) => (
+                    <SelectItem
+                      key={persona.value}
+                      value={persona.value}
+                      className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
+                    >
+                      <div className="flex items-center gap-3 py-1">
+                        <div className="p-1.5 rounded-md bg-white/5">
+                          {persona.icon}
+                        </div>
+                        <div className="flex flex-col text-left">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm tracking-tight">{persona.label}</span>
+                            <span className={clsx("text-[8px] px-1 py-0.5 rounded border font-black", persona.badgeColor)}>
+                              {persona.badge}
                             </span>
                           </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Main Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Input Card */}
-              <Card className="bg-neutral-900/40 backdrop-blur-md border-neutral-800/50 hover:border-neutral-700/50 transition-all duration-500 shadow-2xl rounded-3xl overflow-hidden group">
-                <CardHeader className="pb-4 border-b border-neutral-800/50 bg-white/[0.02]">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
-                        <FileText className="w-5 h-5 text-blue-400" />
-                      </div>
-                      <div className="text-left">
-                        <CardTitle className="text-xl font-bold text-neutral-100">
-                          Original Text
-                        </CardTitle>
-                        <CardDescription className="text-neutral-500">
-                          Paste your content below
-                        </CardDescription>
-                      </div>
-                    </div>
-                    {inputText && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleClear}
-                        className="text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
-                      >
-                        Clear all
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6 text-left">
-                  <Textarea
-                    placeholder="The party of the first part shall indemnify..."
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    className="h-[300px] md:h-[380px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-lg leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
-                  />
-                  <div className="flex items-center justify-between pt-4 border-t border-neutral-800/50">
-                    <div className="flex items-center gap-3">
-                      <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                        <span className="text-xs font-mono text-neutral-400">
-                          {inputText.length.toLocaleString()} CHR
-                        </span>
-                      </div>
-                      {inputText.length > 0 && (
-                        <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                          <span className="text-xs font-mono text-neutral-400">
-                            {inputText.split(/\s+/).filter(Boolean).length} WRD
+                          <span className="text-[10px] text-neutral-500">
+                            {persona.description}
                           </span>
                         </div>
-                      )}
-                    </div>
-                    <Button
-                      onClick={handleSimplify}
-                      disabled={!inputText.trim() || isPending}
-                      className="gap-3 bg-white hover:bg-neutral-200 text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-500 font-bold rounded-2xl px-8 h-12"
-                    >
-                      {isPending ? (
-                        <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          <Zap className="w-5 h-5" />
-                          <span>Simplify</span>
-                          <ArrowRight className="w-4 h-4 opacity-50 group-hover:translate-x-1 transition-transform" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Output Card */}
-              <Card className="bg-neutral-900/40 backdrop-blur-md border-neutral-800/50 hover:border-neutral-700/50 transition-all duration-500 shadow-2xl rounded-3xl overflow-hidden group">
-                <CardHeader className="pb-4 border-b border-neutral-800/50 bg-white/[0.02]">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={clsx(
-                        "p-3 rounded-2xl border transition-all duration-500 group-hover:scale-110",
-                        selectedPersona === "roast"
-                          ? "bg-orange-500/10 border-orange-500/20"
-                          : "bg-emerald-500/10 border-emerald-500/20 shadow-inner"
-                      )}>
-                        {selectedPersona === "roast" ? <Flame className="w-5 h-5 text-orange-400" /> : <Sparkles className="w-5 h-5 text-emerald-400" />}
                       </div>
-                      <div className="text-left">
-                        <CardTitle className="text-xl font-bold text-neutral-100 italic">
-                          {getOutputLabel()}
-                        </CardTitle>
-                        <CardDescription className="text-neutral-500">
-                          {selectedPersona === "roast" ? "The Brutal Truth" : "The Plain Version"}
-                        </CardDescription>
-                      </div>
-                    </div>
-                    {outputText && (
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleSpeak}
-                          className={clsx(
-                            "rounded-xl border-neutral-800 bg-neutral-950/50 hover:bg-neutral-800 transition-all gap-2",
-                            isSpeaking && "text-blue-400 border-blue-500/30 bg-blue-500/10"
-                          )}
-                        >
-                          {isSpeaking ? <Square className="w-3 h-3 fill-current" /> : <Volume2 className="w-4 h-4" />}
-                          <span className="hidden sm:inline">{isSpeaking ? "Stop" : "Listen"}</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleCopy}
-                          className={clsx(
-                            "rounded-xl border-neutral-800 bg-neutral-950/50 hover:bg-neutral-800 transition-all gap-2",
-                            copied && "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
-                          )}
-                        >
-                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                          <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="min-h-[300px] md:h-[430px] rounded-2xl bg-black/20 border border-neutral-800/30 p-6 overflow-y-auto custom-scrollbar relative">
-                    {isPending ? (
-                      <div className="space-y-4 text-left">
-                        <Skeleton className="h-4 w-full bg-white/5" />
-                        <Skeleton className="h-4 w-11/12 bg-white/5" />
-                        <Skeleton className="h-4 w-4/5 bg-white/5" />
-                        <Skeleton className="h-4 w-full bg-white/5" />
-                      </div>
-                    ) : error ? (
-                      <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                        <AlertCircle className="w-12 h-12 text-red-500/50 mb-4" />
-                        <p className="text-red-400 font-semibold mb-2">Process failed</p>
-                        <p className="text-neutral-500 text-sm">{error}</p>
-                      </div>
-                    ) : outputText ? (
-                      <div className="space-y-8 pb-4 text-left">
-                        <p className="text-lg leading-relaxed text-neutral-300 font-medium animate-in fade-in slide-in-from-bottom-2 duration-500 italic">
-                          "{outputText}"
-                        </p>
-
-                        {/* Chat Section */}
-                        <div className="mt-12 pt-8 border-t border-neutral-800/50">
-                          <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                              <MessageCircleQuestion className="w-4 h-4 text-blue-400" />
-                            </div>
-                            <h4 className="text-sm font-bold text-neutral-400 uppercase tracking-widest text-left">Follow-up Questions</h4>
-                          </div>
-
-                          {chatHistory.length > 0 && (
-                            <div className="space-y-6 mb-8 text-left">
-                              {chatHistory.map((msg, i) => (
-                                <div key={i} className={clsx("flex gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-                                  <div className={clsx("w-8 h-8 rounded-full flex items-center justify-center border text-[10px] font-bold shrink-0", msg.role === "user" ? "bg-neutral-800 border-neutral-700 text-neutral-400" : "bg-white text-black border-white")}>
-                                    {msg.role === "user" ? "ME" : "AI"}
-                                  </div>
-                                  <div className={clsx("px-4 py-3 rounded-2xl max-w-[85%] text-sm shadow-xl", msg.role === "user" ? "bg-neutral-800 text-neutral-200" : "bg-neutral-900 border border-neutral-800 text-neutral-300")}>
-                                    {msg.content}
-                                  </div>
-                                </div>
-                              ))}
-                              {isAsking && (
-                                <div className="flex gap-4 animate-pulse opacity-50">
-                                  <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">AI</div>
-                                  <div className="bg-neutral-900 border border-neutral-800 px-4 py-3 rounded-2xl text-sm">Thinking...</div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          <form onSubmit={handleAskQuestion} className="relative group text-left">
-                            <input
-                              type="text"
-                              placeholder="Ask a question about this text..."
-                              value={chatInput}
-                              onChange={(e) => setChatInput(e.target.value)}
-                              disabled={isAsking}
-                              className="w-full h-12 bg-neutral-900/50 border border-neutral-800 rounded-2xl pl-5 pr-14 text-sm focus:outline-none focus:border-neutral-600 transition-all placeholder:text-neutral-600 focus:ring-4 focus:ring-white/5 text-neutral-100"
-                            />
-                            <button
-                              type="submit"
-                              disabled={!chatInput.trim() || isAsking}
-                              className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-xl bg-white text-black hover:bg-neutral-200 transition-all disabled:opacity-20"
-                            >
-                              <SendHorizontal className="w-4 h-4" />
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-center text-neutral-600 py-12">
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 text-left">
-                          <Zap className="w-8 h-8 opacity-20" />
-                        </div>
-                        <p className="font-semibold text-neutral-400 mb-2">Simplified text will appear here</p>
-                        <p className="text-sm max-w-[240px]">Paste your content in the left panel to begin transformation.</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </header>
+          </header>   {/* Main Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Input Card */}
+            <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800 hover:border-neutral-700 transition-all duration-300 shadow-xl rounded-lg overflow-hidden group">
+              <CardHeader className="pb-4 border-b border-neutral-800 px-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-md bg-blue-500/10 border border-blue-500/20">
+                      <FileText className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="text-left">
+                      <CardTitle className="text-sm font-bold text-neutral-300 uppercase tracking-widest">
+                        Source Material
+                      </CardTitle>
+                    </div>
+                  </div>
+                  {inputText && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClear}
+                      className="text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-md transition-colors text-xs font-bold uppercase tracking-wider"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6 px-6">
+                <Textarea
+                  placeholder="Paste legal text, jargon, or complex content here..."
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
+                />
+                <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+                      {inputText.length.toLocaleString()} characters
+                    </span>
+                  </div>
+                  <Button
+                    onClick={handleSimplify}
+                    disabled={!inputText.trim() || isPending}
+                    className="gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10"
+                  >
+                    {isPending ? (
+                      <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4" />
+                        <span>Simplify</span>
+                        <ArrowRight className="w-3.5 h-3.5 opacity-50 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
+            {/* Output Card */}
+            <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800 hover:border-neutral-700 transition-all duration-300 shadow-xl rounded-lg overflow-hidden group">
+              <CardHeader className="pb-4 border-b border-neutral-800 px-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={clsx(
+                      "p-2 rounded-md border",
+                      selectedPersona === "roast"
+                        ? "bg-orange-500/10 border-orange-500/20"
+                        : "bg-emerald-500/10 border-emerald-500/20"
+                    )}>
+                      {selectedPersona === "roast" ? <Flame className="w-5 h-5 text-orange-400" /> : <Sparkles className="w-5 h-5 text-emerald-400" />}
+                    </div>
+                    <div className="text-left">
+                      <CardTitle className="text-sm font-bold text-neutral-300 uppercase tracking-widest">
+                        Simplified Output
+                      </CardTitle>
+                    </div>
+                  </div>
+                  {outputText && (
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleSpeak}
+                        className={clsx(
+                          "w-8 h-8 rounded-md transition-all",
+                          isSpeaking ? "bg-blue-500/10 text-blue-400" : "text-neutral-500 hover:text-white hover:bg-neutral-800"
+                        )}
+                        title={isSpeaking ? "Stop" : "Listen"}
+                      >
+                        {isSpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleCopy}
+                        className={clsx(
+                          "w-8 h-8 rounded-md transition-all",
+                          copied ? "bg-emerald-500/10 text-emerald-400" : "text-neutral-500 hover:text-white hover:bg-neutral-800"
+                        )}
+                        title="Copy"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0 px-0 flex flex-col h-full">
+                <div className="h-[380px] md:h-[454px] p-6 overflow-y-auto custom-scrollbar relative">
+                  {isPending ? (
+                    <div className="space-y-4">
+                      <Skeleton className="h-4 w-full bg-white/5 rounded" />
+                      <Skeleton className="h-4 w-11/12 bg-white/5 rounded" />
+                      <Skeleton className="h-4 w-4/5 bg-white/5 rounded" />
+                      <Skeleton className="h-4 w-full bg-white/5 rounded" />
+                    </div>
+                  ) : error ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                      <AlertCircle className="w-10 h-10 text-red-500/50 mb-3" />
+                      <p className="text-red-400 font-bold text-sm uppercase tracking-wider">Process failed</p>
+                      <p className="text-neutral-500 text-xs mt-1">{error}</p>
+                    </div>
+                  ) : outputText ? (
+                    <div className="space-y-8 pb-4 text-left">
+                      <div className="text-base md:text-lg leading-relaxed text-white font-medium animate-in fade-in slide-in-from-bottom-2 duration-700">
+                        {outputText}
+                      </div>
+
+                      {/* Chat / Follow-up Section */}
+                      <div className="mt-12 pt-8 border-t border-neutral-800">
+                        <div className="flex items-center gap-2 mb-6">
+                          <MessageCircleQuestion className="w-4 h-4 text-blue-500" />
+                          <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Clarification Chat</h4>
+                        </div>
+
+                        {chatHistory.length > 0 && (
+                          <div className="space-y-6 mb-8">
+                            {chatHistory.map((msg, i) => (
+                              <div key={i} className={clsx("flex gap-3 animate-in fade-in slide-in-from-bottom-2", msg.role === "user" ? "flex-row-reverse" : "flex-row text-left")}>
+                                <div className={clsx("w-7 h-7 rounded flex items-center justify-center border text-[9px] font-black shrink-0", msg.role === "user" ? "bg-neutral-800 border-neutral-700 text-neutral-500" : "bg-neutral-200 text-black border-neutral-200")}>
+                                  {msg.role === "user" ? "ME" : "AI"}
+                                </div>
+                                <div className={clsx("px-4 py-3 rounded-lg max-w-[85%] text-xs font-medium leading-relaxed shadow-sm", msg.role === "user" ? "bg-neutral-800 text-neutral-300" : "bg-neutral-900 border border-neutral-800 text-neutral-300")}>
+                                  {msg.content}
+                                </div>
+                              </div>
+                            ))}
+                            {isAsking && (
+                              <div className="flex gap-3 animate-pulse">
+                                <div className="w-7 h-7 rounded bg-neutral-200 text-black flex items-center justify-center text-[9px] font-black">AI</div>
+                                <div className="bg-neutral-900 border border-neutral-800 px-4 py-3 rounded-lg text-xs text-neutral-500">Processing follow-up...</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <form onSubmit={handleAskQuestion} className="relative group">
+                          <input
+                            type="text"
+                            placeholder="Ask a specific question about this result..."
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            disabled={isAsking}
+                            className="w-full h-11 bg-neutral-950 border border-neutral-800 rounded-lg pl-4 pr-12 text-xs focus:outline-none focus:border-neutral-700 transition-all placeholder:text-neutral-700 text-neutral-200"
+                          />
+                          <button
+                            type="submit"
+                            disabled={!chatInput.trim() || isAsking}
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-white text-black hover:bg-neutral-200 transition-all disabled:opacity-20"
+                          >
+                            <SendHorizontal className="w-3.5 h-3.5" />
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center text-neutral-700 py-12">
+                      <BookOpen className="w-10 h-10 opacity-10 mb-4" />
+                      <p className="font-bold text-xs uppercase tracking-[0.2em] opacity-40">Ready for conversion</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           {/* Features Section */}
-          <div className="mt-24 mb-12">
+          <div className="mt-20 mb-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
               {[
                 { icon: Zap, title: "Lightning Fast", desc: "Get simplified versions of your complex documents in milliseconds." },
                 { icon: User, title: "Human Tone", desc: "Choose your level of simplicity from elementary to professional." },
                 { icon: AlertCircle, title: "100% Secure", desc: "No data is stored on our servers. Your conversions are private." },
               ].map((f, i) => (
-                <div key={i} className="flex gap-5 p-2 group hover:bg-white/[0.02] rounded-3xl transition-colors">
-                  <div className="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <div key={i} className="flex gap-5 p-2 group hover:bg-white/[0.02] rounded-lg transition-colors">
+                  <div className="w-12 h-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
                     <f.icon className="w-5 h-5 text-neutral-400" />
                   </div>
                   <div className="space-y-1">
-                    <h5 className="font-bold text-neutral-200">{f.title}</h5>
-                    <p className="text-sm text-neutral-500 leading-relaxed">{f.desc}</p>
+                    <h5 className="font-bold text-neutral-200 text-sm tracking-tight">{f.title}</h5>
+                    <p className="text-xs text-neutral-500 leading-relaxed font-medium">{f.desc}</p>
                   </div>
                 </div>
               ))}
@@ -828,15 +803,15 @@ export default function Home() {
           </div>
 
           {/* Footer */}
-          <footer className="mt-20 pt-8 border-t border-neutral-800/50 flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 hover:opacity-100 transition-opacity pb-12">
-            <div className="flex items-center gap-6 text-sm font-medium text-neutral-500">
-              <span className="text-neutral-300">© 2024 Plain English</span>
+          <footer className="mt-20 pt-8 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-6 opacity-40 hover:opacity-100 transition-opacity pb-12">
+            <div className="flex items-center gap-6 text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              <span className="text-neutral-400">© 2024 Plain English</span>
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Terms</a>
             </div>
-            <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-neutral-900 border border-neutral-800">
-              <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Powered by</span>
-              <span className="text-xs font-bold text-white">LLAMA-3.3-70B</span>
+            <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800">
+              <span className="text-[9px] font-black text-neutral-600 uppercase tracking-[0.2em]">Engine</span>
+              <span className="text-[10px] font-bold text-white tracking-tight">LLAMA-3.3-70B</span>
             </div>
           </footer>
         </div>
@@ -844,3 +819,4 @@ export default function Home() {
     </div>
   );
 }
+
