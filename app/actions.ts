@@ -73,7 +73,8 @@ Be funny, be savage, but keep it clean. This should make people laugh and want t
 
 export async function simplifyText(
   input: string,
-  persona: PersonaType = "eli5"
+  persona: PersonaType = "eli5",
+  isActionMode: boolean = false
 ): Promise<SimplifyResult> {
   if (!input.trim()) {
     return {
@@ -89,7 +90,11 @@ export async function simplifyText(
     };
   }
 
-  const systemPrompt = personaPrompts[persona];
+  let systemPrompt = personaPrompts[persona];
+
+  if (isActionMode) {
+    systemPrompt += "\n\nCRITICAL ADDITION: After the simplification, you MUST also extract the core request and list 3 concrete steps the user needs to take to resolve it. Format this clearly as an 'ACTION PLAN' section at the end.";
+  }
 
   try {
     const chatCompletion = await groq.chat.completions.create({
@@ -218,7 +223,8 @@ export async function askQuestion(
 export async function analyzeImage(
   base64Data: string,
   mimeType: string,
-  fileName: string
+  fileName: string,
+  isActionMode: boolean = false
 ): Promise<SimplifyResult> {
   if (!base64Data) {
     return {
@@ -238,7 +244,11 @@ export async function analyzeImage(
     console.log(`Starting image analysis for file: ${fileName}, type: ${mimeType}`);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const prompt = "Analyze this image. If it is text, extract it and explain it in simple 5th-grade English. If it is a diagram or error message, explain what it means clearly. Do not use complex jargon. Keep the explanation very simple and direct.";
+    let prompt = "Analyze this image. If it is text, extract it and explain it in simple 5th-grade English. If it is a diagram or error message, explain what it means clearly. Do not use complex jargon. Keep the explanation very simple and direct.";
+
+    if (isActionMode) {
+      prompt += " Additionally, extract the core request from this image and list 3 concrete steps I need to take to resolve it. Format this clearly as an 'ACTION PLAN' section at the end.";
+    }
 
     console.log("Sending request to Gemini 1.5 Flash...");
     const result = await model.generateContent([
