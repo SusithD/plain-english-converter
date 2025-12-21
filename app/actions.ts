@@ -146,3 +146,68 @@ export async function simplifyText(
     };
   }
 }
+
+export async function askQuestion(
+  contextText: string,
+  question: string
+): Promise<SimplifyResult> {
+  if (!contextText.trim() || !question.trim()) {
+    return {
+      success: false,
+      error: "Context or question is missing.",
+    };
+  }
+
+  if (!process.env.GROQ_API_KEY) {
+    return {
+      success: false,
+      error: "GROQ_API_KEY is not configured.",
+    };
+  }
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `You are a helpful assistant that explains complex documents. 
+          Use the provided text as your ONLY source of truth. 
+          Answer the user's question accurately, simply, and directly. 
+          If the answer isn't in the text, say you don't know based on the document provided.
+          
+          Document Context:
+          """
+          ${contextText}
+          """`,
+        },
+        {
+          role: "user",
+          content: question,
+        },
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.3, // Lower temperature for higher factual accuracy
+      max_tokens: 1024,
+    });
+
+    const answer = chatCompletion.choices[0]?.message?.content;
+
+    if (!answer) {
+      return {
+        success: false,
+        error: "Failed to generate an answer.",
+      };
+    }
+
+    return {
+      success: true,
+      data: answer,
+    };
+  } catch (error) {
+    console.error("Groq Chat Error:", error);
+    return {
+      success: false,
+      error: "An error occurred while answering your question.",
+    };
+  }
+}
