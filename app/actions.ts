@@ -312,3 +312,46 @@ export async function analyzeImage(
     };
   }
 }
+
+export async function transcribeAudio(formData: FormData): Promise<SimplifyResult> {
+  const file = formData.get("file") as File;
+  if (!file) {
+    return {
+      success: false,
+      error: "No audio file provided.",
+    };
+  }
+
+  if (!process.env.GROQ_API_KEY) {
+    return {
+      success: false,
+      error: "GROQ_API_KEY is not configured.",
+    };
+  }
+
+  try {
+    const transcription = await groq.audio.transcriptions.create({
+      file: file,
+      model: "whisper-large-v3",
+      response_format: "json",
+    });
+
+    if (!transcription.text) {
+      return {
+        success: false,
+        error: "No text detected in audio.",
+      };
+    }
+
+    return {
+      success: true,
+      data: transcription.text,
+    };
+  } catch (error: any) {
+    console.error("Transcription Error:", error);
+    return {
+      success: false,
+      error: error.message || "Failed to transcribe audio. Please try again.",
+    };
+  }
+}
