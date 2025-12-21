@@ -522,7 +522,7 @@ export default function Home() {
                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                   <Wand2 className="w-4 h-4 text-blue-400" />
                 </div>
-                <span className="text-sm font-black text-white tracking-tighter uppercase whitespace-nowrap">Plain English</span>
+                <span className="text-sm font-black text-white tracking-tighter uppercase whitespace-nowrap">theqexle</span>
               </div>
             )}
 
@@ -566,9 +566,9 @@ export default function Home() {
           <header className="text-center mb-12 md:mb-16">
             {/* Title */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 text-foreground tracking-tighter text-left">
-              Plain English
+              theqexle
               <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
-                Converter
+                Translator
               </span>
             </h1>
 
@@ -853,7 +853,7 @@ export default function Home() {
           {/* Footer */}
           <footer className="mt-20 pt-8 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-6 opacity-40 hover:opacity-100 transition-opacity pb-12">
             <div className="flex items-center gap-6 text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
-              <span className="text-neutral-400">© 2024 Plain English</span>
+              <span className="text-neutral-400">© 2025 theqexle</span>
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Terms</a>
             </div>
