@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useCallback } from "react";
-import { simplifyText, askQuestion, PersonaType } from "./actions";
+import { simplifyText, askQuestion, analyzeImage, PersonaType } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -49,6 +49,10 @@ import {
   PanelLeftClose,
   PanelLeft,
   Plus,
+  Eye,
+  Image as ImageIcon,
+  Upload,
+  X,
 } from "lucide-react";
 import {
   Sheet,
@@ -130,6 +134,9 @@ export default function Home() {
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mode, setMode] = useState<"text" | "vision">("text");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
@@ -261,11 +268,73 @@ export default function Home() {
     window.speechSynthesis.speak(utterance);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please select an image file.");
+        return;
+      }
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setImagePreview(null);
+  };
+
   const handleSimplify = () => {
     setError("");
     setOutputText("");
     setChatHistory([]); // Reset chat when starting new simplification
     setChatInput("");
+
+    if (mode === "vision") {
+      if (!selectedFile) {
+        setError("Please select an image to analyze.");
+        return;
+      }
+
+      startTransition(async () => {
+        try {
+          // Convert to base64 on client side for more reliable transmission
+          const reader = new FileReader();
+          const base64Promise = new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+              const base64 = (reader.result as string).split(',')[1];
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(selectedFile);
+          });
+
+          const base64Data = await base64Promise;
+          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name);
+
+          if (result.success && result.data) {
+            setOutputText(result.data);
+            saveToHistory(`[Visual] ${selectedFile.name}`, result.data, selectedPersona);
+          } else {
+            setError(result.error || "An error occurred during image analysis.");
+          }
+        } catch (err) {
+          console.error("Client-side image processing error:", err);
+          setError("Failed to process image file.");
+        }
+      });
+      return;
+    }
+
+    if (!inputText.trim()) {
+      setError("Please provide some text to simplify.");
+      return;
+    }
 
     startTransition(async () => {
       const result = await simplifyText(inputText, selectedPersona);
@@ -296,6 +365,8 @@ export default function Home() {
     setError("");
     setChatHistory([]);
     setChatInput("");
+    setSelectedFile(null);
+    setImagePreview(null);
   };
 
   const handleAskQuestion = async (e?: React.FormEvent) => {
@@ -631,45 +702,140 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-md bg-blue-500/10 border border-blue-500/20">
-                      <FileText className="w-5 h-5 text-blue-400" />
+                      {mode === "text" ? <FileText className="w-5 h-5 text-blue-400" /> : <Eye className="w-5 h-5 text-blue-400" />}
                     </div>
                     <div className="text-left">
-                      <CardTitle className="text-sm font-bold text-neutral-300 uppercase tracking-widest">
-                        Source Material
+                      <CardTitle className="text-sm font-bold text-neutral-300 uppercase tracking-widest leading-none">
+                        {mode === "text" ? "Source Material" : "Vision Mode"}
                       </CardTitle>
                     </div>
                   </div>
-                  {inputText && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleClear}
-                      className="text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-md transition-colors text-xs font-bold uppercase tracking-wider"
-                    >
-                      Clear
-                    </Button>
-                  )}
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setMode("text")}
+                        className={clsx(
+                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all",
+                          mode === "text" ? "bg-neutral-800 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                        )}
+                      >
+                        Text
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setMode("vision")}
+                        className={clsx(
+                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all",
+                          mode === "vision" ? "bg-neutral-800 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                        )}
+                      >
+                        Vision
+                      </Button>
+                    </div>
+
+                    {(inputText || selectedFile) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClear}
+                        className="text-neutral-500 hover:text-white hover:bg-neutral-800 rounded-md transition-colors text-xs font-bold uppercase tracking-wider h-8"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="p-0 space-y-0">
-                <div className="px-6 pt-6">
-                  <Textarea
-                    placeholder="Paste legal text, jargon, or complex content here..."
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
-                  />
-                </div>
+                {mode === "text" ? (
+                  <div className="px-6 pt-6">
+                    <Textarea
+                      placeholder="Paste legal text, jargon, or complex content here..."
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
+                    />
+                  </div>
+                ) : (
+                  <div className="p-6">
+                    {!imagePreview ? (
+                      <div
+                        className="h-[300px] md:h-[400px] border-2 border-dashed border-neutral-800 rounded-xl flex flex-col items-center justify-center gap-4 group/upload hover:border-blue-500/50 hover:bg-blue-500/5 transition-all cursor-pointer relative"
+                        onClick={() => document.getElementById('vision-upload')?.click()}
+                      >
+                        <input
+                          id="vision-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                        <div className="p-4 rounded-full bg-neutral-900 border border-neutral-800 group-hover/upload:scale-110 group-hover/upload:border-blue-500/50 transition-all duration-300">
+                          <Upload className="w-8 h-8 text-neutral-600 group-hover/upload:text-blue-400" />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-[10px] font-black text-neutral-300 uppercase tracking-[0.2em]">Upload Image</p>
+                          <p className="text-xs text-neutral-600 mt-2 font-medium">Screenshots, documents, or diagrams</p>
+                        </div>
+                        <Button variant="outline" size="sm" className="mt-2 border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800 text-[10px] font-black uppercase tracking-widest h-8 px-4">
+                          Browse Files
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="relative group/preview h-[300px] md:h-[400px] rounded-xl overflow-hidden border border-neutral-800 bg-black/40">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-full h-full object-contain"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => document.getElementById('vision-upload-change')?.click()}
+                            className="bg-black/50 border-white/20 hover:bg-black/80 text-white text-[10px] font-black uppercase tracking-widest h-9 px-4"
+                          >
+                            <ImageIcon className="w-4 h-4 mr-2" />
+                            Change
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={removeFile}
+                            className="text-[10px] font-black uppercase tracking-widest h-9 px-4"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
+                        </div>
+                        <input
+                          id="vision-upload-change"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="p-6 pt-2">
                   <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
-                        {inputText.length.toLocaleString()} characters
+                        {mode === "text"
+                          ? `${inputText.length.toLocaleString()} characters`
+                          : selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : "No file selected"
+                        }
                       </span>
                     </div>
                     <Button
                       onClick={handleSimplify}
-                      disabled={!inputText.trim() || isPending}
+                      disabled={isPending || (mode === "text" ? !inputText.trim() : !selectedFile)}
                       className="gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10"
                     >
                       {isPending ? (
@@ -677,7 +843,7 @@ export default function Home() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4" />
-                          <span>Simplify</span>
+                          <span>{mode === "text" ? "Simplify" : "Analyze Image"}</span>
                           <ArrowRight className="w-3.5 h-3.5 opacity-50 transition-transform group-hover:translate-x-1" />
                         </>
                       )}
