@@ -519,9 +519,6 @@ export default function Home() {
             {/* Logo area - only visible if sidebar is closed */}
             {!isDesktopSidebarOpen && (
               <div className="hidden md:flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-500">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <Wand2 className="w-4 h-4 text-blue-400" />
-                </div>
                 <span className="text-sm font-black text-white tracking-tighter uppercase whitespace-nowrap">theqexle</span>
               </div>
             )}
