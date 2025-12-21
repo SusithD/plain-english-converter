@@ -1,10 +1,13 @@
 "use server";
 
 import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export type PersonaType = "eli5" | "tldr" | "professional" | "roast";
 
@@ -208,6 +211,76 @@ export async function askQuestion(
     return {
       success: false,
       error: "An error occurred while answering your question.",
+    };
+  }
+}
+
+export async function analyzeImage(
+  base64Data: string,
+  mimeType: string,
+  fileName: string
+): Promise<SimplifyResult> {
+  if (!base64Data) {
+    return {
+      success: false,
+      error: "No image data provided.",
+    };
+  }
+
+  if (!process.env.GEMINI_API_KEY) {
+    return {
+      success: false,
+      error: "GEMINI_API_KEY is not configured. Please add it to your .env.local file.",
+    };
+  }
+
+  try {
+    console.log(`Starting image analysis for file: ${fileName}, type: ${mimeType}`);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = "Analyze this image. If it is text, extract it and explain it in simple 5th-grade English. If it is a diagram or error message, explain what it means clearly. Do not use complex jargon. Keep the explanation very simple and direct.";
+
+    console.log("Sending request to Gemini 1.5 Flash...");
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: base64Data,
+          mimeType: mimeType,
+        },
+      },
+    ]);
+
+    const responseText = result.response.text();
+    console.log("Received response from Gemini.");
+
+    if (!responseText) {
+      return {
+        success: false,
+        error: "Failed to analyze image. Please try again.",
+      };
+    }
+
+    return {
+      success: true,
+      data: responseText,
+    };
+  } catch (error: any) {
+    console.error("Gemini API Error Detail:", error);
+
+    let errorMessage = "An error occurred while analyzing the image.";
+
+    if (error?.message?.includes("API_KEY_INVALID")) {
+      errorMessage = "Invalid Gemini API key. Please check your .env file.";
+    } else if (error?.message?.includes("User location is not supported")) {
+      errorMessage = "Gemini API is not available in your region.";
+    } else if (error?.message) {
+      errorMessage = `Gemini Error: ${error.message}`;
+    }
+
+    return {
+      success: false,
+      error: errorMessage,
     };
   }
 }
