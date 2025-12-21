@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useTransition, useEffect, useCallback } from "react";
-import { simplifyText, askQuestion, analyzeImage, PersonaType } from "./actions";
+import { useState, useTransition, useEffect, useCallback, useRef } from "react";
+import { simplifyText, askQuestion, analyzeImage, transcribeAudio, PersonaType } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -55,6 +55,8 @@ import {
   X,
   Activity,
   Globe,
+  Mic,
+  Loader2,
 } from "lucide-react";
 import {
   Sheet,
@@ -155,6 +157,10 @@ export default function Home() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isActionMode, setIsActionMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
@@ -284,6 +290,68 @@ export default function Home() {
 
     // Speak the text
     window.speechSynthesis.speak(utterance);
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        await handleTranscription(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setError("");
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      setError("Microphone access denied or not supported.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleTranscription = async (audioBlob: Blob) => {
+    setIsTranscribing(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", audioBlob, "recording.webm");
+      const result = await transcribeAudio(formData);
+      if (result.success && result.data) {
+        setInputText((prev) => prev ? `${prev}\n${result.data}` : result.data!);
+      } else {
+        setError(result.error || "failed to transcribe audio.");
+      }
+    } catch (err) {
+      console.error("Transcription error:", err);
+      setError("An error occurred during transcription.");
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -788,6 +856,26 @@ export default function Home() {
                         )}
                       >
                         Vision
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={toggleRecording}
+                        disabled={isTranscribing}
+                        className={clsx(
+                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all gap-1.5",
+                          isRecording ? "bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                        )}
+                      >
+                        {isTranscribing ? (
+                          <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
+                        ) : (
+                          <Mic className={clsx("w-3 h-3", isRecording ? "text-red-500" : "text-neutral-600")} />
+                        )}
+                        {isRecording ? "Stop Listening" : "Vocal Input"}
                       </Button>
                     </div>
 
