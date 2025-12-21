@@ -42,6 +42,10 @@ import {
   History,
   Clock,
   Trash2,
+  Search,
+  Settings,
+  Github,
+  Command,
   PanelLeftClose,
   PanelLeft,
   Plus,
@@ -125,6 +129,13 @@ export default function Home() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filtered history based on search
+  const filteredHistory = history.filter(item =>
+    item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.simplifiedText.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -361,11 +372,13 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
             <div className="px-2 py-2">
               <h3 className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider mb-3 px-1">Recent History</h3>
-              {history.length === 0 ? (
-                <p className="text-xs text-neutral-600 italic px-1">Your recent simplifications will appear here.</p>
+              {filteredHistory.length === 0 ? (
+                <p className="text-xs text-neutral-600 italic px-1">
+                  {searchQuery ? "No results found." : "Your recent simplifications will appear here."}
+                </p>
               ) : (
                 <div className="space-y-1">
-                  {history.map((item) => (
+                  {filteredHistory.map((item) => (
                     <div
                       key={item.id}
                       onClick={() => restoreFromHistory(item)}
@@ -418,107 +431,134 @@ export default function Home() {
           isDesktopSidebarOpen ? "md:ml-[260px]" : "md:ml-0"
         )}
       >
-        {/* Toggle Button Container - Top Left */}
-        <div className="fixed top-4 left-4 z-[60]">
-          {!isDesktopSidebarOpen && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsDesktopSidebarOpen(true)}
-              className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 shadow-xl rounded-xl w-11 h-11 hidden md:flex items-center justify-center transition-all animate-in zoom-in-50 duration-300"
-              title="Open sidebar"
-            >
-              <PanelLeft className="w-6 h-6" />
-            </Button>
-          )}
+        {/* Navbar */}
+        <nav className="sticky top-0 z-[50] w-full bg-black/40 backdrop-blur-xl border-b border-white/5 px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4 flex-1">
+            {/* Desktop Toggle Button - Inside Navbar */}
+            {!isDesktopSidebarOpen && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsDesktopSidebarOpen(true)}
+                className="hidden md:flex text-neutral-400 hover:text-white hover:bg-white/5 rounded-lg w-10 h-10 transition-all border border-transparent hover:border-white/10"
+                title="Open sidebar"
+              >
+                <PanelLeft className="w-5 h-5" />
+              </Button>
+            )}
 
-          {/* Mobile Sheet Trigger */}
-          <div className="md:hidden">
-            <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 text-neutral-400 shadow-xl rounded-xl w-10 h-10"
-                >
-                  <History className="w-5 h-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="bg-[#0a0a0a] border-neutral-800 text-foreground w-[280px] p-0 overflow-hidden flex flex-col">
-                <div className="flex flex-col h-full p-4">
-                  <SheetHeader className="pb-6 border-b border-neutral-800 mb-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                          <History className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <SheetTitle className="text-lg font-bold text-white uppercase tracking-tight">History</SheetTitle>
-                      </div>
-                      <Button onClick={() => { handleClear(); setIsMobileSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-md">
-                        <Plus className="w-5 h-5" />
-                      </Button>
-                    </div>
-                  </SheetHeader>
-
-                  <div className="flex-1 overflow-y-auto space-y-4">
-                    {history.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <Clock className="w-10 h-10 text-neutral-700 mb-4" />
-                        <p className="text-neutral-500 text-sm">No history found</p>
-                      </div>
-                    ) : (
-                      history.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => restoreFromHistory(item)}
-                          className="p-3 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:bg-neutral-800/50 transition-all cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              {personas.find(p => p.value === item.persona)?.icon}
-                              <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.persona}</span>
-                            </div>
-                            <span className="text-[10px] text-neutral-600">{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            {/* Mobile Sheet Trigger - Inside Navbar */}
+            <div className="md:hidden">
+              <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-neutral-400 hover:text-white rounded-lg w-10 h-10"
+                  >
+                    <History className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="bg-[#0a0a0a] border-neutral-800 text-foreground w-[280px] p-0 overflow-hidden flex flex-col">
+                  <div className="flex flex-col h-full p-4">
+                    <SheetHeader className="pb-6 border-b border-neutral-800 mb-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                            <History className="w-5 h-5 text-blue-400" />
                           </div>
-                          <p className="text-sm text-neutral-200 line-clamp-2">{item.originalText}</p>
+                          <SheetTitle className="text-lg font-bold text-white uppercase tracking-tight">History</SheetTitle>
                         </div>
-                      ))
+                        <Button onClick={() => { handleClear(); setIsMobileSidebarOpen(false); }} variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-md">
+                          <Plus className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    </SheetHeader>
+
+                    <div className="flex-1 overflow-y-auto space-y-4">
+                      {filteredHistory.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                          <Clock className="w-10 h-10 text-neutral-700 mb-4" />
+                          <p className="text-neutral-500 text-sm">
+                            {searchQuery ? "No results found" : "No history found"}
+                          </p>
+                        </div>
+                      ) : (
+                        filteredHistory.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() => restoreFromHistory(item)}
+                            className="p-3 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:bg-neutral-800/50 transition-all cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                {personas.find(p => p.value === item.persona)?.icon}
+                                <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.persona}</span>
+                              </div>
+                              <span className="text-[10px] text-neutral-600">{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <p className="text-sm text-neutral-200 line-clamp-2">{item.originalText}</p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {history.length > 0 && (
+                      <div className="pt-4 border-t border-neutral-800 mt-auto">
+                        <Button onClick={clearHistory} variant="ghost" className="w-full justify-start gap-2 text-neutral-500 hover:text-red-400">
+                          <Trash2 className="w-4 h-4" />
+                          Clear All
+                        </Button>
+                      </div>
                     )}
                   </div>
+                </SheetContent>
+              </Sheet>
+            </div>
 
-                  {history.length > 0 && (
-                    <div className="pt-4 border-t border-neutral-800 mt-auto">
-                      <Button onClick={clearHistory} variant="ghost" className="w-full justify-start gap-2 text-neutral-500 hover:text-red-400">
-                        <Trash2 className="w-4 h-4" />
-                        Clear All
-                      </Button>
-                    </div>
-                  )}
+            {/* Logo area - only visible if sidebar is closed */}
+            {!isDesktopSidebarOpen && (
+              <div className="hidden md:flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-500">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Wand2 className="w-4 h-4 text-blue-400" />
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
+                <span className="text-sm font-black text-white tracking-tighter uppercase whitespace-nowrap">Plain English</span>
+              </div>
+            )}
 
-        {/* Subtle decorative elements - Next.js inspired */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Top gradient glow */}
-          <div
-            className="absolute -top-[400px] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-20"
-            style={{
-              background:
-                "radial-gradient(ellipse, rgba(59, 130, 246, 0.3) 0%, transparent 70%)",
-            }}
-          />
-          {/* Subtle dot grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `radial-gradient(circle at center, #ffffff 1px, transparent 1px)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
+            {/* Search Bar container */}
+            <div className="flex-1 max-w-md ml-4 md:ml-0">
+              <div className="relative w-full group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-blue-400 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search history..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-10 bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-white/[0.07] transition-all placeholder:text-neutral-600 text-neutral-200"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded border border-white/10 bg-white/5 opacity-40">
+                  <Command className="w-2.5 h-2.5" />
+                  <span className="text-[10px] font-bold">K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="hidden sm:flex text-neutral-500 hover:text-white rounded-lg">
+              <Github className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-lg">
+              <Settings className="w-5 h-5" />
+            </Button>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 p-[1px] cursor-pointer">
+              <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-[10px] font-black">
+                OP
+              </div>
+            </div>
+          </div>
+        </nav>
 
         {/* Main content */}
         <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
