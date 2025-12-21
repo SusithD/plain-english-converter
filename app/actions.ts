@@ -74,7 +74,8 @@ Be funny, be savage, but keep it clean. This should make people laugh and want t
 export async function simplifyText(
   input: string,
   persona: PersonaType = "eli5",
-  isActionMode: boolean = false
+  isActionMode: boolean = false,
+  targetLang: string = "English"
 ): Promise<SimplifyResult> {
   if (!input.trim()) {
     return {
@@ -94,6 +95,14 @@ export async function simplifyText(
 
   if (isActionMode) {
     systemPrompt += "\n\nCRITICAL ADDITION: After the simplification, you MUST also extract the core request and list 3 concrete steps the user needs to take to resolve it. Format this clearly as an 'ACTION PLAN' section at the end.";
+  }
+
+  if (targetLang && targetLang !== "English") {
+    systemPrompt += `\n\nCRITICAL: Your entire output (the simplification and the action plan if requested) MUST be written in ${targetLang}.`;
+
+    if (targetLang === "Sinhala") {
+      systemPrompt += "\nSpecial instruction for Sinhala: Use natural, standard written Sinhala (සම්මත ලිඛිත සිංහල). Avoid using overly complex or robotic-sounding literal translations. Ensure the simplification remains simple and conversational in the local cultural context.";
+    }
   }
 
   try {
@@ -224,7 +233,8 @@ export async function analyzeImage(
   base64Data: string,
   mimeType: string,
   fileName: string,
-  isActionMode: boolean = false
+  isActionMode: boolean = false,
+  targetLang: string = "English"
 ): Promise<SimplifyResult> {
   if (!base64Data) {
     return {
@@ -248,6 +258,14 @@ export async function analyzeImage(
 
     if (isActionMode) {
       prompt += " Additionally, extract the core request from this image and list 3 concrete steps I need to take to resolve it. Format this clearly as an 'ACTION PLAN' section at the end.";
+    }
+
+    if (targetLang && targetLang !== "English") {
+      prompt += ` CRITICAL: Your entire response MUST be written in ${targetLang}.`;
+
+      if (targetLang === "Sinhala") {
+        prompt += " Special instruction for Sinhala: Use natural and standard written Sinhala (සම්මත ලිඛිත සිංහල). Ensure the explanation is culturally appropriate and easy for a native speaker to understand without being robotic.";
+      }
     }
 
     console.log("Sending request to Gemini 1.5 Flash...");
