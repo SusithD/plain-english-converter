@@ -627,7 +627,7 @@ export default function Home() {
               </Select>
             </div>
           </header>   {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Input Card */}
             <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800 hover:border-neutral-700 transition-all duration-300 shadow-xl rounded-lg overflow-hidden group">
               <CardHeader className="pb-4 border-b border-neutral-800 px-6">
@@ -687,8 +687,8 @@ export default function Home() {
             </Card>
 
             {/* Output Card */}
-            <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800 hover:border-neutral-700 transition-all duration-300 shadow-xl rounded-lg overflow-hidden group">
-              <CardHeader className="pb-4 border-b border-neutral-800 px-6">
+            <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800 hover:border-neutral-700 transition-all duration-300 shadow-xl rounded-lg overflow-hidden group flex flex-col">
+              <CardHeader className="pb-4 border-b border-neutral-800 px-6 shrink-0">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={clsx(
@@ -735,8 +735,9 @@ export default function Home() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="pt-0 px-0 flex flex-col h-full">
-                <div className="h-[380px] md:h-[454px] p-6 overflow-y-auto custom-scrollbar relative">
+              <CardContent className="p-0 flex flex-col flex-1 overflow-hidden">
+                {/* Scrollable Content Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar relative p-6">
                   {isPending ? (
                     <div className="space-y-4">
                       <Skeleton className="h-4 w-full bg-white/5 rounded" />
@@ -756,15 +757,15 @@ export default function Home() {
                         {outputText}
                       </div>
 
-                      {/* Chat / Follow-up Section */}
-                      <div className="mt-12 pt-8 border-t border-neutral-800">
-                        <div className="flex items-center gap-2 mb-6">
-                          <MessageCircleQuestion className="w-4 h-4 text-blue-500" />
-                          <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Clarification Chat</h4>
-                        </div>
+                      {/* Chat History Area */}
+                      {chatHistory.length > 0 && (
+                        <div className="mt-12 pt-8 border-t border-neutral-800">
+                          <div className="flex items-center gap-2 mb-6">
+                            <MessageCircleQuestion className="w-4 h-4 text-blue-500" />
+                            <h4 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Clarification Chat</h4>
+                          </div>
 
-                        {chatHistory.length > 0 && (
-                          <div className="space-y-6 mb-8">
+                          <div className="space-y-6">
                             {chatHistory.map((msg, i) => (
                               <div key={i} className={clsx("flex gap-3 animate-in fade-in slide-in-from-bottom-2", msg.role === "user" ? "flex-row-reverse" : "flex-row text-left")}>
                                 <div className={clsx("w-7 h-7 rounded flex items-center justify-center border text-[9px] font-black shrink-0", msg.role === "user" ? "bg-neutral-800 border-neutral-700 text-neutral-500" : "bg-neutral-200 text-black border-neutral-200")}>
@@ -782,26 +783,8 @@ export default function Home() {
                               </div>
                             )}
                           </div>
-                        )}
-
-                        <form onSubmit={handleAskQuestion} className="relative group">
-                          <input
-                            type="text"
-                            placeholder="Ask a specific question about this result..."
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            disabled={isAsking}
-                            className="w-full h-11 bg-neutral-950 border border-neutral-800 rounded-lg pl-4 pr-12 text-xs focus:outline-none focus:border-neutral-700 transition-all placeholder:text-neutral-700 text-neutral-200"
-                          />
-                          <button
-                            type="submit"
-                            disabled={!chatInput.trim() || isAsking}
-                            className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-white text-black hover:bg-neutral-200 transition-all disabled:opacity-20"
-                          >
-                            <SendHorizontal className="w-3.5 h-3.5" />
-                          </button>
-                        </form>
-                      </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center text-neutral-700 py-12">
@@ -810,6 +793,35 @@ export default function Home() {
                     </div>
                   )}
                 </div>
+
+                {/* Sticky Chat Input at Bottom */}
+                {outputText && !error && !isPending && (
+                  <div className="p-6 border-t border-neutral-800 bg-neutral-900/50 backdrop-blur-sm">
+                    {!chatHistory.length && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <MessageCircleQuestion className="w-3 h-3 text-blue-500/70" />
+                        <span className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.1em]">Clarification Chat</span>
+                      </div>
+                    )}
+                    <form onSubmit={handleAskQuestion} className="relative group">
+                      <input
+                        type="text"
+                        placeholder="Ask a specific question about this result..."
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        disabled={isAsking}
+                        className="w-full h-11 bg-neutral-950 border border-neutral-800 rounded-lg pl-4 pr-12 text-xs focus:outline-none focus:border-neutral-700 transition-all placeholder:text-neutral-700 text-neutral-200"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!chatInput.trim() || isAsking}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-white text-black hover:bg-neutral-200 transition-all disabled:opacity-20"
+                      >
+                        <SendHorizontal className="w-3.5 h-3.5" />
+                      </button>
+                    </form>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
