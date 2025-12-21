@@ -313,8 +313,24 @@ export async function analyzeImage(
   }
 }
 
+const languageCodes: Record<string, string> = {
+  English: "en",
+  Spanish: "es",
+  French: "fr",
+  German: "de",
+  Italian: "it",
+  Portuguese: "pt",
+  Russian: "ru",
+  Chinese: "zh",
+  Japanese: "ja",
+  Hindi: "hi",
+  Sinhala: "si",
+};
+
 export async function transcribeAudio(formData: FormData): Promise<SimplifyResult> {
   const file = formData.get("file") as File;
+  const targetLanguage = formData.get("language") as string || "English";
+
   if (!file) {
     return {
       success: false,
@@ -330,10 +346,20 @@ export async function transcribeAudio(formData: FormData): Promise<SimplifyResul
   }
 
   try {
+    const langCode = languageCodes[targetLanguage] || "en";
+
+    // Build specific prompt for better accuracy in specific languages
+    let prompt = "";
+    if (langCode === "si") {
+      prompt = "This is a recording in Sinhala language. Please transcribe it accurately in Sinhala script (සිංහල ලේඛන).";
+    }
+
     const transcription = await groq.audio.transcriptions.create({
       file: file,
       model: "whisper-large-v3",
       response_format: "json",
+      language: langCode,
+      prompt: prompt,
     });
 
     if (!transcription.text) {
