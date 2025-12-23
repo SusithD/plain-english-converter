@@ -2,9 +2,14 @@
 
 import Groq from "groq-sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { CartesiaClient } from "@cartesia/cartesia-js";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
+});
+
+const cartesia = new CartesiaClient({
+  apiKey: process.env.CARTESIA_API_KEY,
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -378,6 +383,49 @@ export async function transcribeAudio(formData: FormData): Promise<SimplifyResul
     return {
       success: false,
       error: error.message || "Failed to transcribe audio. Please try again.",
+    };
+  }
+}
+
+export async function speakText(text: string): Promise<{ success: boolean; audio?: string; error?: string }> {
+  if (!text) {
+    return { success: false, error: "No text provided." };
+  }
+
+  if (!process.env.CARTESIA_API_KEY) {
+    return { success: false, error: "CARTESIA_API_KEY not configured." };
+  }
+
+  try {
+    const stream = await cartesia.tts.bytes({
+      modelId: "sonic-english",
+      transcript: text,
+      voice: {
+        mode: "id",
+        id: "694a9389-3a45-4df2-8e6d-c3dd16abb405",
+      },
+      outputFormat: {
+        container: "mp3",
+        sampleRate: 44100,
+        bitRate: 128000,
+      },
+    });
+
+    const chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.from(chunk));
+    }
+    const audioBuffer = Buffer.concat(chunks);
+    const base64Audio = audioBuffer.toString("base64");
+    return {
+      success: true,
+      audio: `data:audio/mp3;base64,${base64Audio}`,
+    };
+  } catch (error: any) {
+    console.error("Cartesia TTS Error:", error);
+    return {
+      success: false,
+      error: error.message || "Failed to generate speech.",
     };
   }
 }
