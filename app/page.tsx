@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition, useEffect, useCallback, useRef } from "react";
-import { simplifyText, askQuestion, analyzeImage, transcribeAudio, PersonaType } from "./actions";
+import { simplifyText, askQuestion, analyzeImage, transcribeAudio, speakText, PersonaType } from "./actions";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -1079,7 +1080,22 @@ export default function Home() {
                   ) : outputText ? (
                     <div className="space-y-8 pb-4 text-left">
                       <div className="text-base md:text-lg leading-relaxed text-white font-medium animate-in fade-in slide-in-from-bottom-2 duration-700">
-                        {outputText}
+                        <ReactMarkdown
+                          components={{
+                            p: ({ node, ...props }) => <p className="mb-4 last:mb-0 leading-loose" {...props} />,
+                            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
+                            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
+                            li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                            strong: ({ node, ...props }) => <strong className="font-bold text-blue-300" {...props} />,
+                            h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-white" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 mt-5 text-white" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="text-lg font-bold mb-2 mt-4 text-white" {...props} />,
+                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-neutral-700 pl-4 italic text-neutral-400 my-4 bg-neutral-900/50 p-2 rounded-r" {...props} />,
+                            code: ({ node, ...props }) => <code className="bg-neutral-800 px-1 py-0.5 rounded text-sm font-mono text-amber-300" {...props} />,
+                          }}
+                        >
+                          {outputText}
+                        </ReactMarkdown>
                       </div>
 
                       {/* Chat History Area */}
