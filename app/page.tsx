@@ -739,14 +739,13 @@ export default function Home() {
             </div>
 
             {/* Main Title */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white tracking-tighter leading-[1.1] max-w-4xl mx-auto animate-in fade-in slide-in-from-top-6 duration-700 delay-200">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium mb-6 text-white tracking-tighter leading-[1.1] max-w-4xl mx-auto animate-in fade-in slide-in-from-top-6 duration-700 delay-200">
               Transform Complex Jargon into <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Plain English.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-8 duration-700 delay-300">
-              Instantly rewrite legal documents, medical reports, and technical guides into clarity.
-              Avoid confusion and understand everything instantly.
+            <p className="text-lg text-neutral-500 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-8 duration-700 delay-300">
+              Instantly clarify legal documents, medical reports, and technical guides.
             </p>
 
             {/* Persona Selector */}
