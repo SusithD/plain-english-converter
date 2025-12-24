@@ -165,6 +165,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchScope, setSearchScope] = useState<"history" | "chat">("history");
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [mode, setMode] = useState<"text" | "vision">("text");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -181,13 +182,19 @@ export default function Home() {
 
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
-    item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.simplifiedText.toLowerCase().includes(searchQuery.toLowerCase())
+    item.originalText.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
+    item.simplifiedText.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
 
   const filteredChatHistory = chatHistory.filter(msg =>
-    msg.content.toLowerCase().includes(searchQuery.toLowerCase())
+    msg.content.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
+
+  // Debounce search input for 250ms
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 250);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   // Focus search with ⌘K / Ctrl+K
   useEffect(() => {
@@ -202,12 +209,13 @@ export default function Home() {
   }, []);
 
   const renderWithHighlight = (text: string) => {
-    if (!searchQuery || searchScope !== "chat") return text;
-    const parts = text.split(new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+    const q = debouncedQuery || searchQuery;
+    if (!q) return text;
+    const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")})`, "gi"));
     return (
       <span>
         {parts.map((part, i) => (
-          part.toLowerCase() === searchQuery.toLowerCase() ? (
+          part.toLowerCase() === q.toLowerCase() ? (
             <mark key={i} className="bg-yellow-500/20 text-yellow-200 rounded px-0.5">{part}</mark>
           ) : (
             <span key={i}>{part}</span>
@@ -752,15 +760,29 @@ export default function Home() {
                     <Command className="w-2.5 h-2.5" />
                     <span className="text-[10px] font-bold">K</span>
                   </div>
-                  <Select value={searchScope} onValueChange={(v: "history" | "chat") => setSearchScope(v)}>
-                    <SelectTrigger className="h-8 w-[90px] bg-neutral-900 border-neutral-800 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#0a0a0a] border-neutral-800">
-                      <SelectItem value="history">History</SelectItem>
-                      <SelectItem value="chat">Chat</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {/* compact segmented control for scope */}
+                  <div className="flex items-center bg-neutral-900/60 rounded-full p-[2px] border border-neutral-800">
+                    <button
+                      type="button"
+                      onClick={() => setSearchScope("history")}
+                      className={clsx(
+                        "px-3 h-8 text-xs rounded-full font-bold transition-all",
+                        searchScope === "history" ? "bg-neutral-800 text-white" : "text-neutral-400 hover:bg-neutral-800"
+                      )}
+                    >
+                      History
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSearchScope("chat")}
+                      className={clsx(
+                        "px-3 h-8 text-xs rounded-full font-bold transition-all",
+                        searchScope === "chat" ? "bg-neutral-800 text-white" : "text-neutral-400 hover:bg-neutral-800"
+                      )}
+                    >
+                      Chat
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -769,6 +791,56 @@ export default function Home() {
 
         {/* Main content */}
         <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
+          {/* Search Results Panel (compact) */}
+          {debouncedQuery && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-neutral-300">Search Results</h3>
+                <div className="text-xs text-neutral-500">{searchScope === "chat" ? `${filteredChatHistory.length} matches` : `${filteredHistory.length} matches`}</div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {searchScope === "history" ? (
+                  filteredHistory.map((item) => (
+                    <div key={item.id} className="flex items-start gap-3 p-3 bg-neutral-900/60 border border-neutral-800 rounded-lg">
+                      <div className="flex-shrink-0">
+                        <div className="p-2 rounded-md bg-white/5">
+                          {personas.find(p => p.value === item.persona)?.icon}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start gap-2">
+                          <p className="text-sm font-semibold text-neutral-200 truncate">{item.originalText}</p>
+                          <span className="text-[11px] text-neutral-500 ml-auto">{new Date(item.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{renderWithHighlight(item.simplifiedText)}</p>
+                        <div className="mt-2 flex gap-2">
+                          <Button size="sm" variant="ghost" onClick={() => restoreFromHistory(item)} className="text-xs">Open</Button>
+                          <Button size="sm" variant="ghost" onClick={async () => { await navigator.clipboard.writeText(item.simplifiedText); }} className="text-xs">Copy</Button>
+                          <Button size="sm" variant="ghost" onClick={(e) => deleteHistoryItem(item.id, e)} className="text-xs text-red-400">Delete</Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  filteredChatHistory.length ? filteredChatHistory.map((msg, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-neutral-900/60 border border-neutral-800 rounded-lg">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-md bg-neutral-800 text-neutral-300 font-black text-[10px]">
+                        {msg.role === "user" ? "ME" : "AI"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-neutral-200">{renderWithHighlight(msg.content)}</p>
+                        <div className="mt-2 flex gap-2">
+                          <Button size="sm" variant="ghost" onClick={async () => { await navigator.clipboard.writeText(msg.content); }} className="text-xs">Copy</Button>
+                        </div>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="p-3 text-sm text-neutral-500">No chat matches found.</div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
           {/* Header */}
           <header className="flex flex-col items-center text-center mb-16 md:mb-24 pt-8">
             {/* Pill Badge */}
