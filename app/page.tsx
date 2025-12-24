@@ -747,89 +747,6 @@ export default function Home() {
             </p>
 
             {/* Persona Selector */}
-            {/* Controls */}
-            <div className="flex flex-wrap items-center justify-start gap-8 mb-12">
-              <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
-                  Simplify As:
-                </span>
-                <Select
-                  value={selectedPersona}
-                  onValueChange={(value: PersonaType) => setSelectedPersona(value)}
-                >
-                  <SelectTrigger className="w-[220px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
-                    <SelectValue>
-                      <div className="flex items-center gap-2.5">
-                        {currentPersona.icon}
-                        <span className="font-bold text-neutral-200 text-sm">{currentPersona.label}</span>
-                        <span className={clsx("text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase", currentPersona.badgeColor)}>
-                          {currentPersona.badge}
-                        </span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
-                    {personas.map((persona) => (
-                      <SelectItem
-                        key={persona.value}
-                        value={persona.value}
-                        className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
-                      >
-                        <div className="flex items-center gap-3 py-1">
-                          <div className="p-1.5 rounded-md bg-white/5">
-                            {persona.icon}
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-sm tracking-tight">{persona.label}</span>
-                              <span className={clsx("text-[8px] px-1 py-0.5 rounded border font-black", persona.badgeColor)}>
-                                {persona.badge}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-neutral-500">
-                              {persona.description}
-                            </span>
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest whitespace-nowrap">
-                  Target Language:
-                </span>
-                <Select
-                  value={selectedLanguage}
-                  onValueChange={(value) => setSelectedLanguage(value)}
-                >
-                  <SelectTrigger className="w-[180px] h-10 bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
-                    <SelectValue>
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-sm">{languages.find(l => l.value === selectedLanguage)?.flag}</span>
-                        <span className="font-bold text-neutral-200 text-sm">{selectedLanguage}</span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800 shadow-2xl rounded-lg p-1">
-                    {languages.map((lang) => (
-                      <SelectItem
-                        key={lang.value}
-                        value={lang.value}
-                        className="cursor-pointer rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white"
-                      >
-                        <div className="flex items-center gap-3 py-1.5">
-                          <span className="text-lg">{lang.flag}</span>
-                          <span className="font-bold text-sm tracking-tight">{lang.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
           </header>   {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Input Card */}
@@ -986,19 +903,83 @@ export default function Home() {
                   </div>
                 )}
                 <div className="p-6 pt-2">
-                  <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-800">
+
+                    {/* Settings Area (Left) */}
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+
+                      {/* Persona Selector (Prominent) */}
+                      <Select value={selectedPersona} onValueChange={(v: PersonaType) => setSelectedPersona(v)}>
+                        <SelectTrigger className="h-10 w-[200px] bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg text-left">
+                          <SelectValue>
+                            <div className="flex items-center gap-2.5">
+                              {currentPersona.icon}
+                              <span className="font-bold text-neutral-200 text-sm">{currentPersona.label}</span>
+                              <span className={clsx("text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ml-auto", currentPersona.badgeColor)}>
+                                {currentPersona.badge}
+                              </span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="bg-neutral-900 border-neutral-800 shadow-xl p-1 w-[220px]">
+                          {personas.map((p) => (
+                            <SelectItem key={p.value} value={p.value} className="rounded mb-0.5 last:mb-0 focus:bg-neutral-800 text-neutral-400 focus:text-white cursor-pointer">
+                              <div className="flex items-center gap-3 py-1">
+                                <div className="p-1.5 rounded-md bg-white/5">
+                                  {p.icon}
+                                </div>
+                                <div className="flex flex-col text-left">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-sm tracking-tight">{p.label}</span>
+                                    <span className={clsx("text-[8px] px-1 py-0.5 rounded border font-black", p.badgeColor)}>
+                                      {p.badge}
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] text-neutral-500 line-clamp-1">
+                                    {p.description}
+                                  </span>
+                                </div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      {/* Language Selector (Prominent) */}
+                      <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                        <SelectTrigger className="h-10 w-[140px] bg-neutral-900 border-neutral-800 shadow-sm hover:border-neutral-700 transition-all rounded-lg">
+                          <SelectValue>
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-sm">{languages.find(l => l.value === selectedLanguage)?.flag}</span>
+                              <span className="font-bold text-neutral-200 text-sm truncate">{selectedLanguage}</span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="bg-neutral-900 border-neutral-800 shadow-xl max-h-[300px]">
+                          {languages.map((l) => (
+                            <SelectItem key={l.value} value={l.value} className="focus:bg-neutral-800 focus:text-white text-neutral-400 cursor-pointer">
+                              <div className="flex items-center gap-3 py-1">
+                                <span className="text-lg">{l.flag}</span>
+                                <span className="font-bold text-sm tracking-tight">{l.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest ml-1 hidden lg:inline-block">
                         {mode === "text"
-                          ? `${inputText.length.toLocaleString()} characters`
-                          : selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : "No file selected"
+                          ? `${inputText.length.toLocaleString()} chars`
+                          : selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : ""
                         }
                       </span>
                     </div>
+
+                    {/* Action Button (Right) */}
                     <Button
                       onClick={handleSimplify}
                       disabled={isPending || (mode === "text" ? !inputText.trim() : !selectedFile)}
-                      className="gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10"
+                      className="w-full sm:w-auto gap-2 bg-white hover:bg-neutral-200 text-black shadow-md transition-all duration-300 font-bold rounded-md px-6 h-10 ml-auto"
                     >
                       {isPending ? (
                         <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
