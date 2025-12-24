@@ -69,7 +69,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { clsx } from "clsx";
-import Mermaid from "@/components/mermaid";
+import Mermaid from "../components/mermaid";
 
 interface HistoryItem {
   id: string;
@@ -1181,14 +1181,17 @@ export default function Home() {
               {/* Card 1: Clarity Score (Purple) */}
               <div className="col-span-1 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-purple-500/15 transition-all group">
                 <div>
-                  <h3 className="text-5xl font-bold text-white mb-2 tracking-tighter group-hover:scale-105 transition-transform origin-left">99%</h3>
+                  <h3 className="text-5xl font-bold text-white mb-1 tracking-tighter group-hover:scale-110 transition-transform origin-left duration-300">99<span className="text-3xl text-purple-300">%</span></h3>
                   <p className="text-sm font-bold text-purple-200 uppercase tracking-wide">Clarity Score</p>
                 </div>
-                <div className="w-full h-12 bg-purple-500/20 rounded-xl overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/20 to-transparent w-full h-full animate-[shimmer_2s_infinite] -translate-x-full" />
-                  <svg className="w-full h-full text-purple-400/40" viewBox="0 0 100 20" preserveAspectRatio="none">
-                    <path d="M0,20 Q20,5 40,15 T80,10 T100,18 V20 H0 Z" fill="currentColor" />
+                {/* Graph Decoration */}
+                <div className="absolute bottom-0 left-0 right-0 h-16 opacity-30 group-hover:opacity-50 transition-opacity">
+                  <svg className="w-full h-full text-purple-400" viewBox="0 0 100 40" preserveAspectRatio="none">
+                    <path d="M0,40 Q20,10 40,25 T100,20 V40 H0 Z" fill="currentColor" />
                   </svg>
+                </div>
+                <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+                  <Sparkles className="w-6 h-6 text-purple-400" />
                 </div>
               </div>
 
@@ -1218,38 +1221,46 @@ export default function Home() {
               </div>
 
               {/* Card 3: Speed/Latency (Emerald) */}
-              <div className="col-span-1 bg-emerald-900/20 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-emerald-900/30 transition-all">
-                <div>
-                  <h3 className="text-5xl font-bold text-white mb-2 tracking-tighter">0s</h3>
-                  <p className="text-sm font-bold text-emerald-200 uppercase tracking-wide">Latency</p>
+              <div className="col-span-1 bg-emerald-900/10 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-emerald-900/20 transition-all duration-300 group relative overflow-hidden">
+                <div className="relative z-10">
+                  <h3 className="text-5xl font-bold text-white mb-1 tracking-tighter group-hover:translate-x-1 transition-transform duration-300">~0<span className="text-3xl text-emerald-300">s</span></h3>
+                  <p className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Latency</p>
                 </div>
-                <div className="flex items-center gap-2 mt-4">
-                  <Zap className="w-5 h-5 text-emerald-400 fill-current animate-pulse" />
-                  <span className="text-xs text-emerald-400/80 font-mono">Real-time</span>
+                <div className="relative z-10 mt-auto">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                    <Zap className="w-3 h-3 fill-current animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Real-time</span>
+                  </div>
                 </div>
+                {/* Background Pulse Effect */}
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl group-hover:bg-emerald-500/30 transition-colors" />
               </div>
 
-              {/* Card 4: Trust/Users (Wide Bottom) */}
-              <div className="col-span-1 md:col-span-3 bg-white border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden relative">
-                <div className="absolute inset-0 bg-neutral-950 opacity-[0.97]" /> {/* Dark overlay since main bg is dark */}
+              {/* Card 4: Universal Understanding (Replaces 'Trusted By') */}
+              <div className="col-span-1 md:col-span-3 bg-neutral-900 border border-neutral-800 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-neutral-950 opacity-50" />
 
-                <div className="relative z-10">
-                  <p className="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-1">Trusted by Professionals</p>
-                  <h4 className="text-xl font-bold text-white">Chosen for critical understanding.</h4>
+                <div className="relative z-10 max-w-md text-center md:text-left">
+                  <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
+                    <Globe className="w-4 h-4 text-blue-500" />
+                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Built for Everyone</p>
+                  </div>
+                  <h4 className="text-2xl font-bold text-white tracking-tight mb-2">Simplicity for any scenario.</h4>
+                  <p className="text-sm text-neutral-500">From academic research to legal contracts, we bridge the gap between complexity and understanding.</p>
                 </div>
 
-                <div className="relative z-10 flex flex-wrap gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="w-5 h-5" />
-                    <span className="font-serif font-bold text-lg">Legal<span className="text-blue-500">Corp</span></span>
+                <div className="relative z-10 flex flex-wrap justify-center gap-4">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-neutral-800/50 border border-neutral-700/50 hover:bg-neutral-800 hover:border-blue-500/30 transition-all w-24 group/item">
+                    <Briefcase className="w-6 h-6 text-neutral-400 group-hover/item:text-blue-400 transition-colors" />
+                    <span className="text-[10px] font-bold text-neutral-500 group-hover/item:text-neutral-300">Professional</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    <span className="font-sans font-bold text-lg tracking-tight">Medi<span className="text-emerald-500">Care</span></span>
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-neutral-800/50 border border-neutral-700/50 hover:bg-neutral-800 hover:border-emerald-500/30 transition-all w-24 group/item">
+                    <BookOpen className="w-6 h-6 text-neutral-400 group-hover/item:text-emerald-400 transition-colors" />
+                    <span className="text-[10px] font-bold text-neutral-500 group-hover/item:text-neutral-300">Academic</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-5 h-5" />
-                    <span className="font-mono font-bold text-lg">Uni<span className="text-amber-500">Learn</span></span>
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-neutral-800/50 border border-neutral-700/50 hover:bg-neutral-800 hover:border-amber-500/30 transition-all w-24 group/item">
+                    <User className="w-6 h-6 text-neutral-400 group-hover/item:text-amber-400 transition-colors" />
+                    <span className="text-[10px] font-bold text-neutral-500 group-hover/item:text-neutral-300">Daily Life</span>
                   </div>
                 </div>
               </div>
