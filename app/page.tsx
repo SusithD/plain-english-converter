@@ -1009,7 +1009,7 @@ export default function Home() {
                         ? "bg-orange-500/10 border-orange-500/20"
                         : "bg-emerald-500/10 border-emerald-500/20"
                     )}>
-                      {selectedPersona === "roast" ? <Flame className="w-5 h-5 text-orange-400" /> : <Sparkles className="w-5 h-5 text-emerald-400" />}
+                      {selectedPersona === "roast" ? <Flame className="w-5 h-5 text-[#a3cc29]" /> : <Sparkles className="w-5 h-5 text-[#a3cc29]" />}
                     </div>
                     <div className="text-left">
                       <CardTitle className="text-sm font-bold text-neutral-300 uppercase tracking-widest">
