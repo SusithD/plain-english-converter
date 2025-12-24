@@ -852,59 +852,50 @@ export default function Home() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setMode("text")}
+                        onClick={() => { setMode("text"); if (isRecording) stopRecording(); }}
                         className={clsx(
-                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all",
-                          mode === "text" ? "bg-neutral-800 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                          "h-7 px-3 text-[10px] font-bold uppercase tracking-wider rounded transition-all gap-1.5",
+                          mode === "text" && !isRecording ? "bg-neutral-800 text-blue-400 shadow-sm" : "text-neutral-500 hover:text-neutral-300"
                         )}
+                        title="Text Input"
                       >
-                        Text
+                        <FileText className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Text</span>
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setMode("vision")}
+                        onClick={() => { setMode("vision"); if (isRecording) stopRecording(); }}
                         className={clsx(
-                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all",
-                          mode === "vision" ? "bg-neutral-800 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                          "h-7 px-3 text-[10px] font-bold uppercase tracking-wider rounded transition-all gap-1.5",
+                          mode === "vision" ? "bg-neutral-800 text-purple-400 shadow-sm" : "text-neutral-500 hover:text-neutral-300"
                         )}
+                        title="Vision Input"
                       >
-                        Vision
+                        <Eye className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Vision</span>
                       </Button>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+                      <div className="w-px h-3 bg-neutral-800 mx-0.5" />
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={toggleRecording}
+                        onClick={() => {
+                          if (mode !== "text") setMode("text");
+                          toggleRecording();
+                        }}
                         disabled={isTranscribing}
                         className={clsx(
-                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all gap-1.5",
-                          isRecording ? "bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse shadow-sm" : "text-neutral-600 hover:text-neutral-400"
+                          "h-7 px-3 text-[10px] font-bold uppercase tracking-wider rounded transition-all gap-1.5",
+                          isRecording ? "bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse shadow-sm" : "text-neutral-500 hover:text-red-400"
                         )}
+                        title="Voice Input"
                       >
                         {isTranscribing ? (
-                          <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         ) : (
-                          <Mic className={clsx("w-3 h-3", isRecording ? "text-red-500" : "text-neutral-600")} />
+                          <Mic className={clsx("w-3.5 h-3.5", isRecording && "fill-current")} />
                         )}
-                        {isRecording ? "Stop Listening" : "Vocal Input"}
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setIsActionMode(!isActionMode)}
-                        className={clsx(
-                          "h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded transition-all gap-1.5",
-                          isActionMode ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm" : "text-neutral-600 hover:text-neutral-400"
-                        )}
-                      >
-                        <Activity className={clsx("w-3 h-3", isActionMode ? "text-amber-400" : "text-neutral-600")} />
-                        Action Mode
+                        <span className="hidden sm:inline">{isRecording ? "Stop" : "Voice"}</span>
                       </Button>
                     </div>
 
