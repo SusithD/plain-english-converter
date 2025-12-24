@@ -846,7 +846,7 @@ export default function Home() {
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-neutral-300 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 delay-100">
               <span className="text-sm font-bold text-neutral-500">∞</span>
-              <span className="text-[10px] font-black uppercase tracking-widest">#1 Plain English Converter</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">From Complex to Clear</span>
             </div>
 
             {/* Main Title */}
