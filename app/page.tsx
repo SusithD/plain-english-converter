@@ -731,19 +731,22 @@ export default function Home() {
         {/* Main content */}
         <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
           {/* Header */}
-          <header className="text-center mb-12 md:mb-16">
-            {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 text-foreground tracking-tighter text-left">
-              Plain English
-              <span className="block mt-1 bg-gradient-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
-                Translator
-              </span>
+          <header className="flex flex-col items-center text-center mb-16 md:mb-24 pt-8">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 delay-100">
+              <span className="text-sm font-bold">∞</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">#1 Plain English Converter</span>
+            </div>
+
+            {/* Main Title */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white tracking-tighter leading-[1.1] max-w-4xl mx-auto animate-in fade-in slide-in-from-top-6 duration-700 delay-200">
+              Transform Complex Jargon into <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Plain English.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-10 text-left">
-              Transform complex jargon, legal documents, and technical writing
-              into simple, easy-to-understand language.
+            <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-top-8 duration-700 delay-300">
+              Instantly rewrite legal documents, medical reports, and technical guides into clarity.
+              Avoid confusion and understand everything instantly.
             </p>
 
             {/* Persona Selector */}
