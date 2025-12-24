@@ -58,6 +58,7 @@ import {
   Globe,
   Mic,
   Loader2,
+  Workflow,
 } from "lucide-react";
 import {
   Sheet,
@@ -68,6 +69,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { clsx } from "clsx";
+import Mermaid from "@/components/mermaid";
 
 interface HistoryItem {
   id: string;
@@ -117,6 +119,14 @@ const personas: {
       icon: <Flame className="w-4 h-4" />,
       badge: "Viral",
       badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+    },
+    {
+      value: "flowchart",
+      label: "Flowchart",
+      description: "Visualize logic",
+      icon: <Workflow className="w-4 h-4" />,
+      badge: "Visual",
+      badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
     },
   ];
 
@@ -1080,22 +1090,26 @@ export default function Home() {
                   ) : outputText ? (
                     <div className="space-y-8 pb-4 text-left">
                       <div className="text-base md:text-lg leading-relaxed text-white font-medium animate-in fade-in slide-in-from-bottom-2 duration-700">
-                        <ReactMarkdown
-                          components={{
-                            p: ({ node, ...props }) => <p className="mb-4 last:mb-0 leading-loose" {...props} />,
-                            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
-                            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
-                            li: ({ node, ...props }) => <li className="pl-1" {...props} />,
-                            strong: ({ node, ...props }) => <strong className="font-bold text-blue-300" {...props} />,
-                            h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-white" {...props} />,
-                            h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 mt-5 text-white" {...props} />,
-                            h3: ({ node, ...props }) => <h3 className="text-lg font-bold mb-2 mt-4 text-white" {...props} />,
-                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-neutral-700 pl-4 italic text-neutral-400 my-4 bg-neutral-900/50 p-2 rounded-r" {...props} />,
-                            code: ({ node, ...props }) => <code className="bg-neutral-800 px-1 py-0.5 rounded text-sm font-mono text-amber-300" {...props} />,
-                          }}
-                        >
-                          {outputText}
-                        </ReactMarkdown>
+                        {selectedPersona === "flowchart" ? (
+                          <Mermaid chart={outputText} />
+                        ) : (
+                          <ReactMarkdown
+                            components={{
+                              p: ({ node, ...props }) => <p className="mb-4 last:mb-0 leading-loose" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
+                              ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-2 text-neutral-200" {...props} />,
+                              li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                              strong: ({ node, ...props }) => <strong className="font-bold text-blue-300" {...props} />,
+                              h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-white" {...props} />,
+                              h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 mt-5 text-white" {...props} />,
+                              h3: ({ node, ...props }) => <h3 className="text-lg font-bold mb-2 mt-4 text-white" {...props} />,
+                              blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-neutral-700 pl-4 italic text-neutral-400 my-4 bg-neutral-900/50 p-2 rounded-r" {...props} />,
+                              code: ({ node, ...props }) => <code className="bg-neutral-800 px-1 py-0.5 rounded text-sm font-mono text-amber-300" {...props} />,
+                            }}
+                          >
+                            {outputText}
+                          </ReactMarkdown>
+                        )}
                       </div>
 
                       {/* Chat History Area */}
@@ -1167,23 +1181,104 @@ export default function Home() {
             </Card>
           </div>
           {/* Features Section */}
-          <div className="mt-20 mb-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-              {[
-                { icon: Zap, title: "Lightning Fast", desc: "Get simplified versions of your complex documents in milliseconds." },
-                { icon: User, title: "Human Tone", desc: "Choose your level of simplicity from elementary to professional." },
-                { icon: AlertCircle, title: "100% Secure", desc: "No data is stored on our servers. Your conversions are private." },
-              ].map((f, i) => (
-                <div key={i} className="flex gap-5 p-2 group hover:bg-white/[0.02] rounded-lg transition-colors">
-                  <div className="w-12 h-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                    <f.icon className="w-5 h-5 text-neutral-400" />
-                  </div>
-                  <div className="space-y-1">
-                    <h5 className="font-bold text-neutral-200 text-sm tracking-tight">{f.title}</h5>
-                    <p className="text-xs text-neutral-500 leading-relaxed font-medium">{f.desc}</p>
+          {/* Bento Grid Features Section */}
+          <div className="mt-24 mb-16 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+              {/* Card 1: Clarity Score (Purple) */}
+              <div className="col-span-1 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-purple-500/15 transition-all group">
+                <div>
+                  <h3 className="text-5xl font-bold text-white mb-2 tracking-tighter group-hover:scale-105 transition-transform origin-left">99%</h3>
+                  <p className="text-sm font-bold text-purple-200 uppercase tracking-wide">Clarity Score</p>
+                </div>
+                <div className="w-full h-12 bg-purple-500/20 rounded-xl overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/20 to-transparent w-full h-full animate-[shimmer_2s_infinite] -translate-x-full" />
+                  <svg className="w-full h-full text-purple-400/40" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <path d="M0,20 Q20,5 40,15 T80,10 T100,18 V20 H0 Z" fill="currentColor" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Card 2: Hero/Main Value (Dark Central) */}
+              <div className="col-span-1 md:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-8 flex flex-col justify-center relative overflow-hidden group">
+                <div className="absolute top-4 left-6 flex -space-x-2">
+                  {[FileText, Globe, Mic, Workflow].map((Icon, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center z-10 hover:z-20 hover:scale-110 transition-all">
+                      <Icon className="w-4 h-4 text-neutral-400" />
+                    </div>
+                  ))}
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white z-0 pl-1">
+                    5+
                   </div>
                 </div>
-              ))}
+
+                <div className="mt-8 relative z-10">
+                  <h3 className="text-3xl font-bold text-white leading-tight mb-2">
+                    Translate Jargon.<br />
+                    <span className="text-neutral-500">Understand Instantly.</span>
+                  </h3>
+                  <p className="text-sm text-neutral-400 max-w-sm mt-2 font-medium">
+                    Advanced AI that turns legalese, medical reports, and technical docs into plain English.
+                  </p>
+                </div>
+                <div className="absolute right-0 bottom-0 w-32 h-32 bg-gradient-to-tl from-blue-500/10 to-transparent blur-3xl pointer-events-none" />
+              </div>
+
+              {/* Card 3: Speed/Latency (Emerald) */}
+              <div className="col-span-1 bg-emerald-900/20 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-emerald-900/30 transition-all">
+                <div>
+                  <h3 className="text-5xl font-bold text-white mb-2 tracking-tighter">0s</h3>
+                  <p className="text-sm font-bold text-emerald-200 uppercase tracking-wide">Latency</p>
+                </div>
+                <div className="flex items-center gap-2 mt-4">
+                  <Zap className="w-5 h-5 text-emerald-400 fill-current animate-pulse" />
+                  <span className="text-xs text-emerald-400/80 font-mono">Real-time</span>
+                </div>
+              </div>
+
+              {/* Card 4: Trust/Users (Wide Bottom) */}
+              <div className="col-span-1 md:col-span-3 bg-white border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden relative">
+                <div className="absolute inset-0 bg-neutral-950 opacity-[0.97]" /> {/* Dark overlay since main bg is dark */}
+
+                <div className="relative z-10">
+                  <p className="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-1">Trusted by Professionals</p>
+                  <h4 className="text-xl font-bold text-white">Chosen for critical understanding.</h4>
+                </div>
+
+                <div className="relative z-10 flex flex-wrap gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-5 h-5" />
+                    <span className="font-serif font-bold text-lg">Legal<span className="text-blue-500">Corp</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    <span className="font-sans font-bold text-lg tracking-tight">Medi<span className="text-emerald-500">Care</span></span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-5 h-5" />
+                    <span className="font-mono font-bold text-lg">Uni<span className="text-amber-500">Learn</span></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 5: Formats (Lime/Yellow) */}
+              <div className="col-span-1 bg-[#dfff9b] rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(#a3cc29_1px,transparent_1px)] [background-size:16px_16px] opacity-20" />
+
+                <div className="relative z-10">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {["PDF", "Doc", "Audio", "Image"].map((tag, i) => (
+                      <span key={i} className="px-2 py-1 bg-white/80 backdrop-blur rounded-md text-[10px] font-black uppercase tracking-wider text-[#5a7a00] shadow-sm">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h4 className="text-lg font-bold text-[#3f5200] leading-tight">
+                    Handles every format.
+                  </h4>
+                </div>
+              </div>
+
             </div>
           </div>
 
