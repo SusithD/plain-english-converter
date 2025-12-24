@@ -1179,7 +1179,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
               {/* Card 1: Clarity Score (Purple) */}
-              <div className="col-span-1 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-purple-500/15 transition-all group">
+              <div className="col-span-1 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 flex flex-col justify-between h-full min-h-[240px] hover:bg-purple-500/15 transition-all duration-300 group overflow-hidden relative">
                 <div>
                   <h3 className="text-5xl font-bold text-white mb-1 tracking-tighter group-hover:scale-110 transition-transform origin-left duration-300">99<span className="text-3xl text-purple-300">%</span></h3>
                   <p className="text-sm font-bold text-purple-200 uppercase tracking-wide">Clarity Score</p>
@@ -1196,7 +1196,7 @@ export default function Home() {
               </div>
 
               {/* Card 2: Hero/Main Value (Dark Central) */}
-              <div className="col-span-1 md:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-8 flex flex-col justify-center relative overflow-hidden group">
+              <div className="col-span-1 md:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-8 flex flex-col justify-center relative overflow-hidden group h-full min-h-[240px]">
                 <div className="absolute top-4 left-6 flex -space-x-2">
                   {[FileText, Globe, Mic, Workflow].map((Icon, i) => (
                     <div key={i} className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center z-10 hover:z-20 hover:scale-110 transition-all">
@@ -1221,7 +1221,7 @@ export default function Home() {
               </div>
 
               {/* Card 3: Speed/Latency (Emerald) */}
-              <div className="col-span-1 bg-emerald-900/10 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between h-[200px] hover:bg-emerald-900/20 transition-all duration-300 group relative overflow-hidden">
+              <div className="col-span-1 bg-emerald-900/10 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between h-full min-h-[240px] hover:bg-emerald-900/20 transition-all duration-300 group relative overflow-hidden">
                 <div className="relative z-10">
                   <h3 className="text-5xl font-bold text-white mb-1 tracking-tighter group-hover:translate-x-1 transition-transform duration-300">~0<span className="text-3xl text-emerald-300">s</span></h3>
                   <p className="text-xs font-bold text-emerald-300 uppercase tracking-widest">Latency</p>
@@ -1266,20 +1266,37 @@ export default function Home() {
               </div>
 
               {/* Card 5: Formats (Lime/Yellow) */}
-              <div className="col-span-1 bg-[#dfff9b] rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden">
+              {/* Card 5: Formats (Lime/Yellow) */}
+              <div className="col-span-1 bg-[#dfff9b] rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group h-full min-h-[200px] hover:scale-[1.02] transition-transform duration-300">
                 <div className="absolute inset-0 bg-[radial-gradient(#a3cc29_1px,transparent_1px)] [background-size:16px_16px] opacity-20" />
 
-                <div className="relative z-10">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {["PDF", "Doc", "Audio", "Image"].map((tag, i) => (
-                      <span key={i} className="px-2 py-1 bg-white/80 backdrop-blur rounded-md text-[10px] font-black uppercase tracking-wider text-[#5a7a00] shadow-sm">
-                        {tag}
-                      </span>
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  {/* Icons Row */}
+                  <div className="flex gap-2">
+                    {[
+                      { icon: FileText, bg: "bg-white", text: "text-blue-600" },
+                      { icon: ImageIcon, bg: "bg-white", text: "text-purple-600" },
+                      { icon: Mic, bg: "bg-white", text: "text-red-600" },
+                      { icon: Globe, bg: "bg-white", text: "text-emerald-600" },
+                    ].map((item, i) => (
+                      <div key={i} className={`w-10 h-10 rounded-xl ${item.bg} shadow-sm border border-black/5 flex items-center justify-center -ml-2 first:ml-0 hover:-translate-y-1 transition-transform duration-300 ring-2 ring-[#dfff9b]`}>
+                        <item.icon className={`w-5 h-5 ${item.text}`} />
+                      </div>
                     ))}
                   </div>
-                  <h4 className="text-lg font-bold text-[#3f5200] leading-tight">
-                    Handles every format.
-                  </h4>
+
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#5a7a00] animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#5a7a00]/70">Format Support</span>
+                    </div>
+                    <h4 className="text-2xl font-bold text-[#2a3600] leading-none mb-1">
+                      Any Input.
+                    </h4>
+                    <p className="text-sm font-bold text-[#5a7a00] leading-tight opacity-80">
+                      PDF, Images, Audio, URLs.
+                    </p>
+                  </div>
                 </div>
               </div>
 
