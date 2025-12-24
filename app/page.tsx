@@ -173,6 +173,10 @@ export default function Home() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
+  // Input metrics for UX
+  const wordCount = inputText.trim() ? inputText.trim().split(/\s+/).length : 0;
+  const readingMinutes = wordCount ? Math.max(1, Math.round(wordCount / 180)) : 0;
+
   // Filtered history based on search
   const filteredHistory = history.filter(item =>
     item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -835,11 +839,30 @@ export default function Home() {
                 {mode === "text" ? (
                   <div className="px-6 pt-6">
                     <Textarea
+                      id="source-material"
+                      aria-label="Source Material"
+                      aria-describedby="source-help"
                       placeholder="Paste legal text, jargon, or complex content here..."
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
-                      className="h-[300px] md:h-[400px] resize-none overflow-y-auto bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
+                      onKeyDown={(e) => {
+                        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                          e.preventDefault();
+                          handleSimplify();
+                        }
+                      }}
+                      className="min-h-[220px] resize-none bg-transparent border-none focus-visible:ring-0 text-base leading-relaxed transition-all placeholder:text-neutral-700 p-0 text-neutral-200"
                     />
+                    <div className="mt-3 flex items-center justify-between text-xs text-neutral-500">
+                      <div className="flex items-center gap-3">
+                        <span>{inputText.length.toLocaleString()} characters</span>
+                        <span>• {wordCount.toLocaleString()} words</span>
+                        {wordCount > 0 && <span>• ~{readingMinutes} min read</span>}
+                      </div>
+                      <div id="source-help" className="hidden sm:block">
+                        Press ⌘+Enter to Simplify
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="p-6">
