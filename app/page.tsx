@@ -733,14 +733,14 @@ export default function Home() {
           {/* Header */}
           <header className="flex flex-col items-center text-center mb-16 md:mb-24 pt-8">
             {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 delay-100">
-              <span className="text-sm font-bold">∞</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-neutral-300 mb-8 animate-in fade-in slide-in-from-top-4 duration-700 delay-100">
+              <span className="text-sm font-bold text-neutral-500">∞</span>
               <span className="text-[10px] font-black uppercase tracking-widest">#1 Plain English Converter</span>
             </div>
 
             {/* Main Title */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium mb-6 text-white tracking-tighter leading-[1.1] max-w-4xl mx-auto animate-in fade-in slide-in-from-top-6 duration-700 delay-200">
-              Transform Complex Jargon into <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Plain English.</span>
+              Transform Complex Jargon into <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e0ffad] to-[#a3cc29]">Plain English.</span>
             </h1>
 
             {/* Subtitle */}
