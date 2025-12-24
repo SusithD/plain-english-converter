@@ -14,7 +14,7 @@ const cartesia = new CartesiaClient({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export type PersonaType = "eli5" | "tldr" | "professional" | "roast";
+export type PersonaType = "eli5" | "tldr" | "professional" | "roast" | "flowchart";
 
 export interface SimplifyResult {
   success: boolean;
@@ -74,6 +74,23 @@ Guidelines:
 - End with a simple translation of what they actually meant to say
 
 Be funny, be savage, but keep it clean. This should make people laugh and want to share it.`,
+
+  flowchart: `You are a logic visualizer. Your job is to convert the user's text into a valid Mermaid.js flowchart.
+
+Guidelines:
+- Analyze the logical flow, steps, decision points, and outcomes in the text.
+- Convert this into a 'graph TD' (top-down) flowchart.
+- Use clear, short labels for nodes.
+- Use diamond shapes for decisions (e.g., A{Decision?}).
+- Use standard rectangles or rounded rectangles for steps.
+- DO NOT wrap the output in markdown code blocks (like \`\`\`mermaid). JUST return the raw mermaid code.
+- Ensure the syntax is valid so it renders correctly without any quotes or special styling characters that might break the renderer.
+
+Output format example:
+graph TD
+A[Start] --> B{Is it raining?}
+B -- Yes --> C[Take umbrella]
+B -- No --> D[Wear sunglasses]`,
 };
 
 export async function simplifyText(
