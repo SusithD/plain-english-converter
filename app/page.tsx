@@ -163,6 +163,8 @@ export default function Home() {
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchScope, setSearchScope] = useState<"history" | "chat">("history");
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [mode, setMode] = useState<"text" | "vision">("text");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -182,6 +184,38 @@ export default function Home() {
     item.originalText.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.simplifiedText.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredChatHistory = chatHistory.filter(msg =>
+    msg.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Focus search with ⌘K / Ctrl+K
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const renderWithHighlight = (text: string) => {
+    if (!searchQuery || searchScope !== "chat") return text;
+    const parts = text.split(new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+    return (
+      <span>
+        {parts.map((part, i) => (
+          part.toLowerCase() === searchQuery.toLowerCase() ? (
+            <mark key={i} className="bg-yellow-500/20 text-yellow-200 rounded px-0.5">{part}</mark>
+          ) : (
+            <span key={i}>{part}</span>
+          )
+        ))}
+      </span>
+    );
+  };
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -698,35 +732,36 @@ export default function Home() {
               </div>
             )}
 
-            {/* Search Bar container */}
-            <div className="flex-1 max-w-md ml-4 md:ml-0">
+            {/* (Moved) Search Bar will be on the right side */}
+          </div>
+          {/* Right side: Search Bar + Scope */}
+          <div className="flex items-center gap-3">
+            <div className="w-[340px] md:w-[420px]">
               <div className="relative w-full group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-blue-400 transition-colors" />
                 <input
+                  ref={searchInputRef}
                   type="text"
-                  placeholder="Search history..."
+                  placeholder={searchScope === "chat" ? "Search chats..." : "Search history..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-10 bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-white/[0.07] transition-all placeholder:text-neutral-600 text-neutral-200"
+                  className="w-full h-10 bg-white/5 border border-white/10 rounded-xl pl-10 pr-28 text-sm focus:outline-none focus:border-blue-500/30 focus:bg-white/[0.07] transition-all placeholder:text-neutral-600 text-neutral-200"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded border border-white/10 bg-white/5 opacity-40">
-                  <Command className="w-2.5 h-2.5" />
-                  <span className="text-[10px] font-bold">K</span>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <div className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded border border-white/10 bg-white/5 opacity-40">
+                    <Command className="w-2.5 h-2.5" />
+                    <span className="text-[10px] font-bold">K</span>
+                  </div>
+                  <Select value={searchScope} onValueChange={(v: "history" | "chat") => setSearchScope(v)}>
+                    <SelectTrigger className="h-8 w-[90px] bg-neutral-900 border-neutral-800 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0a0a0a] border-neutral-800">
+                      <SelectItem value="history">History</SelectItem>
+                      <SelectItem value="chat">Chat</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="hidden sm:flex text-neutral-500 hover:text-white rounded-lg">
-              <Github className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-lg">
-              <Settings className="w-5 h-5" />
-            </Button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 p-[1px] cursor-pointer">
-              <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-[10px] font-black">
-                OP
               </div>
             </div>
           </div>
@@ -1112,7 +1147,7 @@ export default function Home() {
                       </div>
 
                       {/* Chat History Area */}
-                      {chatHistory.length > 0 && (
+                      {(searchScope === "chat" && searchQuery ? filteredChatHistory.length > 0 : chatHistory.length > 0) && (
                         <div className="mt-12 pt-8 border-t border-neutral-800">
                           <div className="flex items-center gap-2 mb-6">
                             <MessageCircleQuestion className="w-4 h-4 text-blue-500" />
@@ -1120,13 +1155,13 @@ export default function Home() {
                           </div>
 
                           <div className="space-y-6">
-                            {chatHistory.map((msg, i) => (
+                            {(searchScope === "chat" && searchQuery ? filteredChatHistory : chatHistory).map((msg, i) => (
                               <div key={i} className={clsx("flex gap-3 animate-in fade-in slide-in-from-bottom-2", msg.role === "user" ? "flex-row-reverse" : "flex-row text-left")}>
                                 <div className={clsx("w-7 h-7 rounded flex items-center justify-center border text-[9px] font-black shrink-0", msg.role === "user" ? "bg-neutral-800 border-neutral-700 text-neutral-500" : "bg-neutral-200 text-black border-neutral-200")}>
                                   {msg.role === "user" ? "ME" : "AI"}
                                 </div>
                                 <div className={clsx("px-4 py-3 rounded-lg max-w-[85%] text-xs font-medium leading-relaxed shadow-sm", msg.role === "user" ? "bg-neutral-800 text-neutral-300" : "bg-neutral-900 border border-neutral-800 text-neutral-300")}>
-                                  {msg.content}
+                                  {renderWithHighlight(msg.content)}
                                 </div>
                               </div>
                             ))}
