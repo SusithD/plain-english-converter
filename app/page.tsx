@@ -469,7 +469,9 @@ export default function Home() {
 
   const handleAskQuestion = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!chatInput.trim() || !inputText || isAsking) return;
+    const context = mode === "vision" ? outputText : inputText;
+
+    if (!chatInput.trim() || !context || isAsking) return;
 
     const question = chatInput.trim();
     setChatInput("");
@@ -477,7 +479,7 @@ export default function Home() {
     setIsAsking(true);
 
     try {
-      const result = await askQuestion(inputText, question);
+      const result = await askQuestion(context, question);
       if (result.success && result.data) {
         setChatHistory((prev) => [...prev, { role: "assistant", content: result.data! }]);
       } else {
