@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plain English Converter - UI/UX Case Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Core Colors based on your Design System */
+            --bg-color: #000000;
+            --card-bg: #0a0a0a;
+            --card-border: #262626;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1a1;
+            
+            /* Accents */
+            --accent-lime: #ccff00; /* Adjusted to match your screenshot */
+            --accent-gradient-start: #e0ffad;
+            --accent-gradient-end: #a3cc29;
+            --primary-action: #ffffff;
+            --success: #22c55e;
+            --purple: #8b5cf6;
+            --purple-dark: #4c1d95;
+            --blue: #3b82f6;
+
+            /* Spacing */
+            --radius: 24px; /* Slightly rounder for Bento style */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Layout Container (Behance Style width) --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Typography Helpers --- */
+        h1, h2, h3 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        /* --- Section Styling --- */
+        section {
+            margin-bottom: 120px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+            border-left: 4px solid var(--accent-lime);
+            padding-left: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        /* --- 1. HERO (UPDATED DESIGN) --- */
+        .hero {
+            text-align: center;
+            padding: 100px 0 180px;
+            /* Background Pattern Update */
+            background-color: #000;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 80%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            border-bottom: 1px solid var(--card-border);
+            position: relative;
+            overflow: visible;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 10;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            margin-bottom: 32px;
+            font-size: 0.875rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- ENHANCED 3D MACBOOK STYLES --- */
+        .macbook-scene {
+            width: 100%;
+            max-width: 860px;
+            height: 480px;
+            margin: 0 auto;
+            perspective: 2000px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .macbook-wrapper {
+            transform-style: preserve-3d;
+            animation: float-laptop 8s ease-in-out infinite;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hero:hover .macbook-wrapper {
+            /* On hover, lift and tilt towards user */
+            transform: translateY(-20px) rotateX(10deg);
+        }
+
+        /* The Shadow underneath */
+        .macbook-shadow {
+            position: absolute;
+            bottom: -120px;
+            left: 50%;
+            transform: translateX(-50%) rotateX(70deg);
+            width: 700px;
+            height: 100px;
+            background: radial-gradient(ellipse at center, rgba(204, 255, 0, 0.15) 0%, rgba(0,0,0,0) 60%);
+            opacity: 0.6;
+            animation: shadow-breathe 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .hero:hover .macbook-shadow {
+            opacity: 0.8;
+            transform: translateX(-50%) rotateX(70deg) scale(1.1);
+        }
+
+        .macbook-lid {
+            width: 760px;
+            height: 480px;
+            background: #0d0d0d;
+            border-radius: 28px;
+            margin: 0 auto;
+            position: relative;
+            /* Metal finish */
+            border: 1px solid #333;
+            box-shadow: 
+                inset 0 0 0 2px #050505,
+                0 20px 40px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+            transform-origin: bottom;
+            transform: rotateX(-10deg); 
+            transition: all 0.6s ease;
+        }
+
+        .hero:hover .macbook-lid {
+            transform: rotateX(0deg); /* Open straight on hover */
+            box-shadow: 
+                inset 0 0 0 2px #050505,
+                0 0 50px rgba(204, 255, 0, 0.1); /* Subtle lime glow from screen */
+        }
+
+        /* Camera Notch */
+        .macbook-lid::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #222;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #080808;
+            z-index: 20;
+        }
+
+        .macbook-screen {
+            background: #000;
+            position: absolute;
+            top: 14px; left: 14px; right: 14px; bottom: 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #111;
+            /* Screen Glow */
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        /* Internal UI - 3D Layers on Hover */
+        .screen-ui {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            height: 100%;
+            background: #000;
+            transform-style: preserve-3d;
+        }
+
+        .ui-sidebar { 
+            border-right: 1px solid #222; 
+            background: #050505; 
+            transform: translateZ(0); 
+            transition: transform 0.5s; 
+        }
+        
+        .ui-main { 
+            display: flex; 
+            flex-direction: column; 
+            transform: translateZ(0);
+            transition: transform 0.5s;
+        }
+
+        /* Parallax effect inside screen on hover */
+        .hero:hover .ui-sidebar { transform: translateZ(10px); }
+        .hero:hover .ui-main { transform: translateZ(5px); }
+
+        .ui-header { height: 44px; border-bottom: 1px solid #222; display: flex; align-items: center; padding: 0 24px; gap: 10px; }
+        .ui-grid { display: grid; grid-template-columns: 1fr 1fr; padding: 24px; gap: 24px; height: 100%; }
+        
+        .ui-card { 
+            background: #080808; 
+            border: 1px solid #222; 
+            border-radius: 12px; 
+            position: relative; 
+            overflow: hidden; 
+            transition: transform 0.5s, box-shadow 0.5s;
+        }
+
+        /* Pop the cards slightly on hover */
+        .hero:hover .ui-card {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .bar { background: #222; border-radius: 4px; margin-bottom: 8px; }
+        .ui-sidebar .bar { margin: 15px; height: 8px; width: 60%; opacity: 0.5; }
+        .ui-card .bar { height: 8px; width: 90%; margin: 12px auto 0; opacity: 0.6; }
+        
+        .ui-card.output { 
+            border-color: rgba(204, 255, 0, 0.2); 
+            background: linear-gradient(180deg, #0a0a0a 0%, rgba(204, 255, 0, 0.02) 100%);
+        }
+        
+        /* Macbook Base */
+        .macbook-base {
+            width: 860px;
+            height: 36px;
+            background: linear-gradient(to bottom, #262626, #111); /* Metallic Gradient */
+            margin: -24px auto 0; 
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(85deg); 
+            box-shadow: 
+                0 2px 0 #333 inset, /* Edge Highlight */
+                0 50px 80px rgba(0,0,0,0.8);
+        }
+        
+        /* Trackpad Notch */
+        .macbook-base::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 140px; height: 10px;
+            background: #050505;
+            border-radius: 0 0 10px 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Simulated Keyboard on base (visible due to angle) */
+        .macbook-base::after {
+            content: '';
+            position: absolute;
+            top: -100px; /* Projected onto the "flat" part */
+            left: 50%;
+            transform: translateX(-50%) rotateX(-85deg); /* Counteract base rotation to lay flat? No, simplified: */
+            width: 80%;
+            height: 200px;
+            background: repeating-linear-gradient(90deg, #1a1a1a 0, #1a1a1a 12px, transparent 12px, transparent 16px);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .screen-reflection {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.08) 0%, transparent 35%, rgba(255,255,255,0.02) 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes float-laptop {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-15px) rotateX(2deg); }
+        }
+        
+        @keyframes shadow-breathe {
+            0%, 100% { transform: translateX(-50%) rotateX(70deg) scale(1); opacity: 0.6; }
+            50% { transform: translateX(-50%) rotateX(70deg) scale(0.9); opacity: 0.4; }
+        }
+
+        /* --- BENTO GRID STYLES (NEW) --- */
+        .bento-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr 1fr;
+            grid-template-rows: 320px 280px;
+            gap: 24px;
+        }
+
+        /* Responsive Bento */
+        @media (max-width: 1024px) {
+            .bento-wrapper {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto;
+            }
+            .bento-item-2 { grid-column: span 2; }
+            .bento-item-4 { grid-column: span 2; }
+        }
+        @media (max-width: 768px) {
+            .bento-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .bento-item, .bento-item-2, .bento-item-4 { grid-column: span 1; }
+        }
+
+        .bento-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        /* Interactive Hover Effects */
+        .bento-card:hover {
+            border-color: #444;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        /* Card Specifics */
+        .bento-item-1 { /* Clarity Score */
+            grid-column: span 1;
+            background: linear-gradient(180deg, var(--card-bg) 60%, rgba(139, 92, 246, 0.15) 100%);
+        }
+        .bento-item-1:hover {
+            background: linear-gradient(180deg, var(--card-bg) 50%, rgba(139, 92, 246, 0.25) 100%);
+        }
+
+        .bento-item-2 { /* Jargon */
+            grid-column: span 1;
+        }
+
+        .bento-item-3 { /* Latency */
+            grid-column: span 1;
+            background: linear-gradient(180deg, var(--card-bg) 60%, rgba(34, 197, 94, 0.1) 100%);
+        }
+
+        .bento-item-4 { /* Scenarios (Wide Bottom) */
+            grid-column: span 2;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .bento-item-5 { /* Any Input (Lime) */
+            grid-column: span 1;
+            background: var(--accent-lime);
+            color: #000;
+            border: none;
+        }
+        .bento-item-5:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+        }
+
+                /* --- 5. FLOWCHART & STEPS --- */
+        .flow-section-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 60px;
+        }
+
+        /* The Visual Diagram Container */
+        .visual-flowchart {
+            background: #0f0f0f;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-nodes-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .v-node {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px 24px;
+            text-align: center;
+            min-width: 140px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .v-node:hover {
+            border-color: var(--accent-gradient-end);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
+        }
+
+        .v-node.start {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: black;
+            font-weight: 700;
+            border: none;
+        }
+
+        .v-node-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .v-node-sub {
+            font-size: 0.7rem;
+            color: #888;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .v-node.start .v-node-sub { color: rgba(0,0,0,0.6); }
+
+        /* Connecting Lines (SVG style via CSS) */
+        .flow-arrow-h {
+            height: 2px;
+            width: 30px;
+            background: #333;
+            position: relative;
+        }
+        .flow-arrow-h::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -3px;
+            width: 0; 
+            height: 0; 
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-left: 6px solid #333;
+        }
+
+        /* Detailed Steps Below Flowchart */
+        .detailed-steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        
+        .step-row {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 24px;
+            position: relative;
+        }
+
+        /* Connecting line for steps */
+        .step-row:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 29px;
+            top: 60px;
+            bottom: -24px;
+            width: 2px;
+            background: #222;
+        }
+
+        .step-indicator {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #111;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+        
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .step-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .step-subgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .mini-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .mini-card strong {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--accent-gradient-start);
+            margin-bottom: 4px;
+        }
+
+        .mini-card p {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Bento Typography & Elements */
+        .bento-big-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .bento-title {
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+        .bento-sub {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .bento-item-5 .bento-sub {
+            color: rgba(0,0,0,0.6);
+            font-weight: 500;
+        }
+
+        .bento-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: auto;
+            width: fit-content;
+        }
+        .badge-green {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        /* Scenarios Icons Layout */
+        .scenario-grid {
+            display: flex;
+            gap: 16px;
+            margin-left: auto;
+        }
+        .scenario-icon {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #333;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #666;
+            background: #111;
+            transition: 0.2s;
+        }
+        .scenario-icon svg { margin-bottom: 6px; stroke: #888; }
+        .scenario-icon:hover { border-color: #555; background: #161616; color: #fff; }
+        .scenario-icon:hover svg { stroke: #fff; }
+
+
+        /* Input Format Icons (Lime Card) */
+        .format-icons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .f-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .f-icon svg { stroke: #000; }
+
+        /* --- 3. PERSONAS --- */
+        .persona-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .persona-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .persona-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--text-secondary);
+        }
+
+        .persona-tag {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--bg-color);
+            background: var(--primary-action);
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+
+        .persona-role {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .persona-detail {
+            margin-top: 20px;
+            border-top: 1px solid var(--card-border);
+            padding-top: 20px;
+        }
+        
+        .persona-detail strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-gradient-start);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        /* --- 4. DESIGN SYSTEM --- */
+        .ds-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        /* Colors */
+        .color-palette {
+            display: grid;
+            gap: 16px;
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #111;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #222;
+        }
+
+        .swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Typography */
+        .type-scale div {
+            margin-bottom: 24px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 16px;
+        }
+        
+        .type-scale span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+
+        /* Icons */
+        .icon-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+        }
+
+        /* --- 5. FLOWCHART CSS (Updated for detailed steps) --- */
+        .flow-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .flow-step-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+            position: relative;
+        }
+        
+        .flow-step-container::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: -40px;
+            height: 40px;
+            width: 2px;
+            background: #333;
+            z-index: 0;
+        }
+        
+        .flow-step-container:first-child::before {
+            display: none;
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #111;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sub-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .sub-flow-card {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+        
+        .sub-flow-card h4 {
+            color: var(--accent-gradient-start);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sub-flow-card p {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .tech-pill {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #666;
+            margin-right: 4px;
+        }
+
+        /* --- 6. UI COMPONENTS --- */
+        .ui-showcase {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 40px; 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; 
+        }
+
+        .component-group h4 {
+            margin-bottom: 16px; 
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* --- 7. INTERACTIVE LAYOUT MOCKUP (ENHANCED) --- */
+        .mockup-container {
+            background: #111;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            aspect-ratio: 16/9;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: visible; /* Allow 3D elements to overlap */
+        }
+
+        /* Perspective Container */
+        .layout-perspective {
+            perspective: 2000px;
+        }
+
+        /* The moving group */
+        .layout-3d-group {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            height: 100%;
+        }
+
+        /* Hover Effect: Rotate the whole group */
+        .mockup-container:hover .layout-3d-group {
+            transform: rotateX(20deg) rotateY(-15deg) scale(0.9);
+        }
+
+        /* Layer Base Styles */
+        .layout-layer {
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            background: #0a0a0a;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 0 1px #222; /* Faux border that works in 3d */
+        }
+
+        /* Exploded View on Hover */
+        .mockup-container:hover .app-sidebar {
+            transform: translateZ(40px) translateX(-20px);
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.5);
+            border-color: #555;
+            z-index: 5;
+        }
+
+        .mockup-container:hover .app-header {
+            transform: translateZ(60px) translateY(-20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-color: #555;
+            z-index: 10;
+        }
+
+        .mockup-container:hover .content-card:first-child { /* Source Input */
+            transform: translateZ(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 4;
+        }
+
+        .mockup-container:hover .content-card:last-child { /* Output */
+            transform: translateZ(80px);
+            box-shadow: -20px 40px 60px rgba(0,0,0,0.6);
+            border-color: var(--accent-lime);
+            z-index: 20;
+        }
+
+        /* Labels that appear on hover */
+        .layout-tag {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: white;
+            color: black;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            opacity: 0;
+            transform: translateY(10px) translateZ(1px);
+            transition: all 0.4s ease 0.1s;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(255,255,255,0.2);
+        }
+
+        .mockup-container:hover .layout-tag {
+            opacity: 1;
+            transform: translateY(0) translateZ(1px);
+        }
+        
+        .app-shell { display: grid; grid-template-columns: 240px 1fr; height: 100%; gap: 20px; }
+        .app-sidebar { background: #000; border-right: 1px solid #333; border-radius: 12px; }
+        .app-main { display: grid; grid-template-rows: 60px 1fr; gap: 20px; }
+        .app-header { border-bottom: 1px solid #333; display: flex; align-items: center; padding: 0 20px; color: #555; font-size: 0.8rem; }
+        .app-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .content-card { background: #050505; border: 1px solid #222; border-radius: 12px; padding: 20px; }
+
+        footer { text-align: center; padding: 80px 0; border-top: 1px solid #222; color: #555; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <section class="hero">
+            <span class="hero-badge mono">UI/UX CASE STUDY</span>
+            <h1>Plain English <span class="gradient-text">Converter</span></h1>
+            <p>Empowering users by making complex information simple, accessible, and transparent through advanced AI.</p>
+            
+            <div class="macbook-scene">
+                <div class="macbook-wrapper">
+                    <div class="macbook-lid">
+                        <div class="macbook-screen">
+                            <div class="screen-reflection"></div>
+                            <div class="screen-ui">
+                                <div class="ui-sidebar">
+                                    <div style="padding:15px;"><div style="width:12px; height:12px; background:#333; border-radius:50%; display:inline-block; margin-right:4px;"></div><div style="width:12px; height:12px; background:#333; border-radius:50%; display:inline-block;"></div></div>
+                                    <div class="bar" style="margin-left: 20px; margin-top: 20px;"></div>
+                                    <div class="bar" style="margin-left: 20px;"></div>
+                                    <div class="bar" style="margin-left: 20px;"></div>
+                                </div>
+                                <div class="ui-main">
+                                    <div class="ui-header">
+                                        <div style="width:100px; height:8px; background:#222; border-radius:4px;"></div>
+                                        <div style="margin-left:auto; width:30px; height:30px; border-radius:50%; background:#222;"></div>
+                                    </div>
+                                    <div class="ui-grid">
+                                        <div class="ui-card">
+                                            <div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                                                <div style="width:40px; height:6px; background:#333; border-radius:2px;"></div>
+                                                <div style="width:20px; height:6px; background:#333; border-radius:2px;"></div>
+                                            </div>
+                                            <div class="bar" style="width:80%; margin-top:15px;"></div>
+                                            <div class="bar"></div>
+                                            <div class="bar" style="width:60%;"></div>
+                                        </div>
+                                        <div class="ui-card output">
+                                            <div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                                                <div style="width:40px; height:6px; background:var(--accent-lime); border-radius:2px;"></div>
+                                                <div style="width:20px; height:6px; background:#333; border-radius:2px;"></div>
+                                            </div>
+                                            <div class="bar" style="width:90%; margin-top:15px; background:#333;"></div>
+                                            <div class="bar" style="background:#333;"></div>
+                                            <div class="bar" style="width:70%; background:#333;"></div>
+                                            <div class="bar" style="width:85%; background:#333;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="macbook-base"></div>
+                    <div class="macbook-shadow"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>01. Feature Highlights</h2>
+                <p>A suite of powerful tools designed to bridge the gap between complexity and understanding instantly.</p>
+            </div>
+
+            <div class="bento-wrapper">
+                
+                <div class="bento-card bento-item-1">
+                    <div>
+                        <div class="bento-big-text">99%</div>
+                        <div class="bento-sub" style="font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: var(--purple);">Clarity Score</div>
+                    </div>
+                    <div style="position: absolute; top: 20px; right: 20px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b46c1" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="bento-card bento-item-2">
+                    <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+                        <div style="width: 32px; height: 32px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">📄</div>
+                        <div style="width: 32px; height: 32px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">🌐</div>
+                        <div style="width: 32px; height: 32px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">🎙️</div>
+                        <div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">5+</div>
+                    </div>
+                    <div>
+                        <h3 class="bento-title">Translate Jargon.<br>Understand Instantly.</h3>
+                        <p class="bento-sub">Advanced AI that turns legalese, medical reports, and technical docs into plain English.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card bento-item-3">
+                    <div>
+                        <div class="bento-big-text">~0s</div>
+                        <div class="bento-sub" style="font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: var(--success);">Latency</div>
+                    </div>
+                    <div class="bento-badge badge-green">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-right: 6px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Real-time
+                    </div>
+                </div>
+
+                <div class="bento-card bento-item-4">
+                    <div style="max-width: 50%;">
+                        <div style="margin-bottom: 12px; color: #555; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            Built for everyone
+                        </div>
+                        <h3 class="bento-title">Simplicity for any scenario.</h3>
+                        <p class="bento-sub">From academic research to legal contracts, we bridge the gap between complexity and understanding.</p>
+                    </div>
+                    
+                    <div class="scenario-grid">
+                        <div class="scenario-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                            Professional
+                        </div>
+                        <div class="scenario-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            Academic
+                        </div>
+                        <div class="scenario-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            Daily Life
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bento-card bento-item-5">
+                    <div class="format-icons">
+                        <div class="f-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                        <div class="f-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
+                        <div class="f-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></div>
+                        <div class="f-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.6;">Format Support</div>
+                        <h3 class="bento-title" style="margin-bottom: 4px;">Any Input.</h3>
+                        <p class="bento-sub">PDF, Images, Audio, URLs.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>02. User Personas</h2>
+                <p>Based on user research, four distinct personas were defined to cover the spectrum of complexity.</p>
+            </div>
+
+            <div class="persona-container">
+                <div class="persona-card">
+                    <span class="persona-tag">PROFESSIONAL</span>
+                    <span class="persona-role">The Lawyer</span>
+                    <p style="color: #888;">Needs to explain complex topics to clients quickly.</p>
+                    <div class="persona-detail">
+                        <strong>Pain Points</strong>
+                        <p style="font-size: 0.9em;">Information overload, time constraints, client misinterpretation.</p>
+                    </div>
+                </div>
+
+                <div class="persona-card">
+                    <span class="persona-tag" style="background: var(--purple); color: white;">STUDENT</span>
+                    <span class="persona-role">The Researcher</span>
+                    <p style="color: #888;">Struggles with intimidating academic texts and terminology.</p>
+                    <div class="persona-detail">
+                        <strong>Pain Points</strong>
+                        <p style="font-size: 0.9em;">Dense academic papers, volume of reading, new jargon.</p>
+                    </div>
+                </div>
+
+                <div class="persona-card">
+                    <span class="persona-tag" style="background: var(--blue); color: white;">GENERAL</span>
+                    <span class="persona-role">Everyday User</span>
+                    <p style="color: #888;">Enounters terms of service or medical forms daily.</p>
+                    <div class="persona-detail">
+                        <strong>Pain Points</strong>
+                        <p style="font-size: 0.9em;">Feeling disempowered by confusing language.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>03. Design System</h2>
+                <p>A professional dark theme inspired by modern development tools, prioritizing readability and focus.</p>
+            </div>
+
+            <div class="ds-grid">
+                <div class="card" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 40px;">
+                    <h3 style="margin-bottom: 24px; text-transform: uppercase; font-size: 0.9em;">Color Palette</h3>
+                    <div class="color-palette">
+                        <div class="color-row">
+                            <div class="swatch" style="background: #000000; border: 1px solid #333;"></div>
+                            <div>
+                                <strong>Background</strong>
+                                <p class="mono">#000000</p>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <div class="swatch" style="background: #ffffff;"></div>
+                            <div>
+                                <strong>Primary Action</strong>
+                                <p class="mono">#FFFFFF</p>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <div class="swatch" style="background: #ccff00;"></div>
+                            <div>
+                                <strong>Brand Lime</strong>
+                                <p class="mono">#CCFF00</p>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <div class="swatch" style="background: #22c55e;"></div>
+                            <div>
+                                <strong>Success Green</strong>
+                                <p class="mono">#22c55e</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 40px;">
+                    <h3 style="margin-bottom: 24px; text-transform: uppercase; font-size: 0.9em;">Typography (Inter)</h3>
+                    <div class="type-scale">
+                        <div>
+                            <span>Display / 6xl</span>
+                            <h1 style="font-size: 3rem; line-height: 1.1;">Plain English</h1>
+                        </div>
+                        <div>
+                            <span>Heading / 3xl</span>
+                            <h2 style="font-size: 2rem;">Simplification</h2>
+                        </div>
+                        <div>
+                            <span>Body / Regular</span>
+                            <p>The application is designed with a focus on speed, clarity, and user experience.</p>
+                        </div>
+                        <div>
+                            <span>Mono / UI</span>
+                            <p class="mono">system_status: active</p>
+                        </div>
+                    </div>
+
+                    <div class="icon-grid">
+                        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+                        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+                        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>04. Component Library</h2>
+                <p>Modular, reusable components designed for scalability and consistency across the application.</p>
+            </div>
+            
+            <div class="ui-showcase">
+                <div class="component-group">
+                    <h4>Primary Actions</h4>
+                    <div style="margin-bottom: 16px;">
+                        <button style="background: white; color: black; padding: 10px 24px; border-radius: 6px; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-right: 12px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            Simplify
+                        </button>
+                        <button style="background: white; color: black; padding: 10px 24px; border-radius: 6px; border: none; font-weight: 600; opacity: 0.5; display: inline-flex; align-items: center; gap: 8px;">
+                            <div style="width: 16px; height: 16px; border: 2px solid #888; border-top: 2px solid black; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            Processing...
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="background: transparent; color: #a1a1a1; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; font-size: 0.875rem;">Copy</button>
+                        <button style="background: transparent; color: #a1a1a1; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; font-size: 0.875rem;">Listen</button>
+                        <button style="background: transparent; color: #ef4444; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; font-size: 0.875rem;">Clear</button>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Input Components</h4>
+                    <div style="background: #000; border: 1px solid #333; padding: 16px; border-radius: 8px; min-height: 120px; margin-bottom: 8px; color: #666; position: relative;">
+                        Paste legal text, jargon, or complex content here...
+                        <div style="position: absolute; bottom: 8px; right: 12px; font-size: 0.75rem; color: #555;">⌘+Enter to Simplify</div>
+                    </div>
+                    <div style="display: flex; justify-content: between; align-items: center; gap: 12px; font-size: 0.75rem; color: #666;">
+                        <div>1,250 characters • 220 words • ~2 min read</div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Persona Selector</h4>
+                    <div style="background: #111; border: 1px solid #333; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px; width: fit-content; margin-bottom: 12px;">
+                        <div style="width: 32px; height: 32px; background: #1a1a1a; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <span style="font-weight: 600; color: white;">ELI5</span>
+                        <span style="background: #1e40af; color: #93c5fd; padding: 2px 8px; border-radius: 12px; font-size: 0.625rem; font-weight: 700;">SIMPLE</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <div style="background: #0a0a0a; border: 1px solid #333; padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; color: #888;">TL;DR</div>
+                        <div style="background: #0a0a0a; border: 1px solid #333; padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; color: #888;">Professional</div>
+                        <div style="background: #0a0a0a; border: 1px solid #333; padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; color: #888;">Roast Mode</div>
+                        <div style="background: #0a0a0a; border: 1px solid #333; padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; color: #888;">Flowchart</div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Mode Toggle</h4>
+                    <div style="background: #0a0a0a; padding: 4px; border-radius: 8px; border: 1px solid #333; display: flex; gap: 2px; width: fit-content;">
+                        <button style="padding: 6px 12px; border-radius: 4px; background: #333; color: #3b82f6; border: none; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+                            TEXT
+                        </button>
+                        <button style="padding: 6px 12px; border-radius: 4px; background: transparent; color: #666; border: none; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path></svg>
+                            VISION
+                        </button>
+                        <button style="padding: 6px 12px; border-radius: 4px; background: transparent; color: #666; border: none; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg>
+                            VOICE
+                        </button>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Search & Scope</h4>
+                    <div style="position: relative; margin-bottom: 12px;">
+                        <div style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+                        </div>
+                        <input style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 120px 10px 40px; border-radius: 12px; color: white; width: 300px;" placeholder="Search chats..." />
+                        <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center;">
+                            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.625rem; color: #666;">⌘K</div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 2px; border-radius: 12px; display: flex;">
+                                <button style="background: #333; color: white; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">History</button>
+                                <button style="background: transparent; color: #666; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">Chat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Search Results</h4>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 8px; padding: 16px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: start; gap: 12px;">
+                            <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; flex-shrink: 0;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: start; gap: 8px; margin-bottom: 4px;">
+                                    <p style="font-weight: 600; font-size: 0.875rem; margin: 0; color: #e5e5e5;">Legal document about user privacy...</p>
+                                    <span style="font-size: 0.625rem; color: #666; white-space: nowrap;">2:34 PM</span>
+                                </div>
+                                <p style="font-size: 0.75rem; color: #999; margin: 0 0 8px 0; line-height: 1.4;">This document explains how we <mark style="background: rgba(255, 255, 0, 0.2); color: #ffd700;">collect</mark> and use your personal information...</p>
+                                <div style="display: flex; gap: 8px;">
+                                    <button style="background: transparent; color: #888; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Open</button>
+                                    <button style="background: transparent; color: #888; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Copy</button>
+                                    <button style="background: transparent; color: #ef4444; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Status & Feedback</h4>
+                    <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; width: fit-content; margin-bottom: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span style="font-size: 0.875rem; color: #22c55e;">Copied to clipboard</span>
+                    </div>
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; width: fit-content; margin-bottom: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        <span style="font-size: 0.875rem; color: #ef4444;">Failed to process text</span>
+                    </div>
+                    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; width: fit-content;">
+                        <div style="width: 16px; height: 16px; border: 2px solid transparent; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <span style="font-size: 0.875rem; color: #3b82f6;">Processing with AI...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>05. User Flow</h2>
+                <p>A comprehensive visualization of the user journey, from input selection to output interaction.</p>
+            </div>
+
+            <div class="flow-section-wrapper">
+                
+                <div class="visual-flowchart">
+                    <div class="flow-nodes-row">
+                        <div class="v-node start">
+                            <span class="v-node-label">Start</span>
+                            <span class="v-node-sub">User lands on app</span>
+                        </div>
+                        <div class="flow-arrow-h"></div>
+                        <div class="v-node">
+                            <span class="v-node-label">Select Input</span>
+                            <span class="v-node-sub">Text / Vision / Voice</span>
+                        </div>
+                        <div class="flow-arrow-h"></div>
+                        <div class="v-node">
+                            <span class="v-node-label">Configure</span>
+                            <span class="v-node-sub">Persona & Language</span>
+                        </div>
+                    </div>
+
+                    <div style="height: 30px; width: 2px; background: #333; margin: 10px 0; position: relative;"></div>
+                    <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #333;"></div>
+
+                    <div class="flow-nodes-row">
+                        <div class="v-node" style="border-color: var(--accent-lime); color: var(--accent-lime);">
+                            <span class="v-node-label">Output</span>
+                            <span class="v-node-sub">Simplified Result</span>
+                        </div>
+                        <div class="flow-arrow-h"></div>
+                        <div class="v-node">
+                            <span class="v-node-label">AI Processing</span>
+                            <span class="v-node-sub">Llama 3.3 / Gemini</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-steps">
+                    
+                    <div class="step-row">
+                        <div class="step-indicator">01</div>
+                        <div class="step-card">
+                            <h3>Multi-Modal Input</h3>
+                            <div class="step-subgrid">
+                                <div class="mini-card">
+                                    <strong>TEXT MODE</strong>
+                                    <p>Direct entry with auto-grow & live metrics.</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>VISION MODE</strong>
+                                    <p>Image analysis via advanced AI.</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>VOICE MODE</strong>
+                                    <p>Real-time Whisper transcription.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-row">
+                        <div class="step-indicator">02</div>
+                        <div class="step-card">
+                            <h3>Configuration Context</h3>
+                            <div class="step-subgrid">
+                                <div class="mini-card">
+                                    <strong>PERSONA LOGIC</strong>
+                                    <p>Sets system prompt tone (e.g., ELI5, Professional).</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>LANGUAGE</strong>
+                                    <p>Target output language selection (11+ supported).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-row">
+                        <div class="step-indicator">03</div>
+                        <div class="step-card">
+                            <h3>AI Processing</h3>
+                            <div class="step-subgrid">
+                                <div class="mini-card">
+                                    <strong>PROMPT ENGINEERING</strong>
+                                    <p>Combines input + persona + language context.</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>STATE MANAGEMENT</strong>
+                                    <p>Handles loading skeletons & error boundaries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-row">
+                        <div class="step-indicator">04</div>
+                        <div class="step-card">
+                            <h3>Output & Interaction</h3>
+                            <div class="step-subgrid">
+                                <div class="mini-card">
+                                    <strong>PRESENTATION</strong>
+                                    <p>Markdown rendering with syntax highlighting.</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>CLARIFICATION</strong>
+                                    <p>Context-aware Q&A chat for follow-up.</p>
+                                </div>
+                                <div class="mini-card">
+                                    <strong>HISTORY</strong>
+                                    <p>Auto-save to local storage with search.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <div class="section-header">
+                <h2>06. Layout Architecture</h2>
+                <p>Hover over the interface to visualize the component hierarchy and layer separation in 3D.</p>
+            </div>
+
+            <div class="mockup-container layout-perspective">
+                <div class="app-shell layout-3d-group">
+                    <div class="app-sidebar layout-layer">
+                        <div class="layout-tag">Navigation</div>
+                        <div style="padding: 20px; border-bottom: 1px solid #222;">
+                            <div style="height: 10px; width: 40px; background: #333; border-radius: 4px;"></div>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="height: 8px; width: 80%; background: #222; margin-bottom: 15px; border-radius: 4px;"></div>
+                            <div style="height: 8px; width: 60%; background: #222; margin-bottom: 15px; border-radius: 4px;"></div>
+                            <div style="height: 8px; width: 70%; background: #222; margin-bottom: 15px; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="app-main layout-layer-group">
+                        <div class="app-header layout-layer">
+                            <div class="layout-tag">Global Actions</div>
+                            <span style="margin-right: auto;">Plain English Converter</span>
+                            <div style="width: 200px; height: 30px; background: #111; border-radius: 6px;"></div>
+                        </div>
+                        
+                        <div class="app-content">
+                            <div class="content-card layout-layer">
+                                <div class="layout-tag">Input Context</div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                    <span style="font-size: 0.8rem; color: #888;">SOURCE MATERIAL</span>
+                                    <span style="font-size: 0.8rem; color: #888;">TEXT / VISION</span>
+                                </div>
+                                <div style="height: 150px; border: 1px dashed #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #333;">
+                                    Input Area
+                                </div>
+                                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                                    <div style="height: 30px; flex: 1; background: #1a1a1a; border-radius: 6px;"></div>
+                                    <div style="height: 30px; width: 80px; background: white; border-radius: 6px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="content-card layout-layer" style="border-color: var(--accent-lime);">
+                                <div class="layout-tag" style="background: var(--accent-lime);">Result Engine</div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                    <span style="font-size: 0.8rem; color: var(--accent-lime);">SIMPLIFIED OUTPUT</span>
+                                    <div style="width: 20px; height: 20px; background: #222; border-radius: 4px;"></div>
+                                </div>
+                                <div style="height: 10px; width: 90%; background: #222; margin-bottom: 10px; border-radius: 2px;"></div>
+                                <div style="height: 10px; width: 85%; background: #222; margin-bottom: 10px; border-radius: 2px;"></div>
+                                <div style="height: 10px; width: 95%; background: #222; margin-bottom: 10px; border-radius: 2px;"></div>
+                                <div style="height: 10px; width: 60%; background: #222; margin-bottom: 10px; border-radius: 2px;"></div>
+
+                                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #222;">
+                                    <span style="font-size: 0.7rem; color: #555;">Ask a follow-up question...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Plain English Converter UI/UX Case Study • 2024</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
