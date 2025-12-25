@@ -59,6 +59,7 @@ import {
   Mic,
   Loader2,
   Workflow,
+  Linkedin,
 } from "lucide-react";
 import {
   Sheet,
@@ -1418,10 +1419,17 @@ export default function Home() {
 
           {/* Footer */}
           <footer className="mt-20 pt-8 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-6 opacity-40 hover:opacity-100 transition-opacity pb-12">
-            <div className="flex items-center gap-6 text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+            <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
               <span className="text-neutral-400">© 2025 theqexle</span>
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+            </div>
+            <div className="flex items-center gap-3 text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+              <span>Built by Susith Alwis</span>
+              <a href="https://github.com/SusithD" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-white transition-colors">
+                <Github className="w-4 h-4" />
+              </a>
+              <a href="https://www.linkedin.com/in/susith-deshan-alwis/" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-white transition-colors">
+                <Linkedin className="w-4 h-4" />
+              </a>
             </div>
           </footer>
         </div>
