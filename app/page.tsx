@@ -1,5 +1,6 @@
 "use client";
 
+import imageCompression from "browser-image-compression";
 import { useState, useTransition, useEffect, useCallback, useRef } from "react";
 import { simplifyText, askQuestion, analyzeImage, transcribeAudio, speakText, PersonaType } from "./actions";
 import ReactMarkdown from "react-markdown";
@@ -448,6 +449,17 @@ export default function Home() {
 
       startTransition(async () => {
         try {
+          console.log(`Original file size: ${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`);
+
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+
+          const compressedFile = await imageCompression(selectedFile, options);
+          console.log(`Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+
           // Convert to base64 on client side for more reliable transmission
           const reader = new FileReader();
           const base64Promise = new Promise<string>((resolve, reject) => {
@@ -456,15 +468,15 @@ export default function Home() {
               resolve(base64);
             };
             reader.onerror = reject;
-            reader.readAsDataURL(selectedFile);
+            reader.readAsDataURL(compressedFile);
           });
 
           const base64Data = await base64Promise;
-          const result = await analyzeImage(base64Data, selectedFile.type, selectedFile.name, isActionMode, selectedLanguage);
+          const result = await analyzeImage(base64Data, compressedFile.type, compressedFile.name, isActionMode, selectedLanguage);
 
           if (result.success && result.data) {
             setOutputText(result.data);
-            saveToHistory(`[Visual] ${selectedFile.name}`, result.data, selectedPersona);
+            saveToHistory(`[Visual] ${compressedFile.name}`, result.data, selectedPersona);
           } else {
             setError(result.error || "An error occurred during image analysis.");
           }
