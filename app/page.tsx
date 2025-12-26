@@ -449,8 +449,6 @@ export default function Home() {
 
       startTransition(async () => {
         try {
-          console.log(`Original file size: ${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`);
-
           const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
@@ -458,7 +456,6 @@ export default function Home() {
           };
 
           const compressedFile = await imageCompression(selectedFile, options);
-          console.log(`Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
 
           // Convert to base64 on client side for more reliable transmission
           const reader = new FileReader();
