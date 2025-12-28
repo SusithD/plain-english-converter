@@ -2,6 +2,7 @@ import Script from "next/script";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@/components/Analytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -93,6 +94,7 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
+        <Analytics />
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-M9RPXVLYRC"
