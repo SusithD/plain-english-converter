@@ -72,6 +72,8 @@ import {
 } from "@/components/ui/sheet";
 import { clsx } from "clsx";
 import Mermaid from "../components/mermaid";
+import { trackSimplification, trackCopyResult, trackApiError } from "@/lib/gtag";
+
 
 interface HistoryItem {
   id: string;
@@ -376,6 +378,7 @@ export default function Home() {
     } catch (err) {
       console.error("Error accessing microphone:", err);
       setError("Microphone access denied or not supported.");
+      trackApiError("mic_access_denied");
     }
   };
 
@@ -397,10 +400,12 @@ export default function Home() {
         setInputText((prev) => prev ? `${prev}\n${result.data}` : result.data!);
       } else {
         setError(result.error || "failed to transcribe audio.");
+        trackApiError('transcription_failed');
       }
     } catch (err) {
       console.error("Transcription error:", err);
       setError("An error occurred during transcription.");
+      trackApiError('transcription_error');
     } finally {
       setIsTranscribing(false);
     }
@@ -474,12 +479,17 @@ export default function Home() {
           if (result.success && result.data) {
             setOutputText(result.data);
             saveToHistory(`[Visual] ${compressedFile.name}`, result.data, selectedPersona);
+            trackSimplification('vision', compressedFile.size);
           } else {
-            setError(result.error || "An error occurred during image analysis.");
+            const errorMessage = result.error || "An error occurred during image analysis.";
+            setError(errorMessage);
+            trackApiError(errorMessage);
           }
         } catch (err) {
           console.error("Client-side image processing error:", err);
-          setError("Failed to process image file.");
+          const errorMessage = "Failed to process image file.";
+          setError(errorMessage);
+          trackApiError(errorMessage);
         }
       });
       return;
@@ -495,8 +505,11 @@ export default function Home() {
       if (result.success && result.data) {
         setOutputText(result.data);
         saveToHistory(inputText, result.data, selectedPersona);
+        trackSimplification(selectedPersona, inputText.length);
       } else {
-        setError(result.error || "An error occurred");
+        const errorMessage = result.error || "An error occurred";
+        setError(errorMessage);
+        trackApiError(errorMessage);
       }
     });
   };
@@ -506,6 +519,7 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(outputText);
       setCopied(true);
+      trackCopyResult(selectedPersona);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       console.error("Failed to copy text");
@@ -540,9 +554,11 @@ export default function Home() {
         setChatHistory((prev) => [...prev, { role: "assistant", content: result.data! }]);
       } else {
         setError(result.error || "Failed to get an answer.");
+        trackApiError('chat_failed');
       }
     } catch (err) {
       setError("An unexpected error occurred during chat.");
+      trackApiError('chat_error');
     } finally {
       setIsAsking(false);
     }
